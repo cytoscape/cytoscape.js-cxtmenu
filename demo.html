@@ -1,0 +1,104 @@
+<!DOCTYPE>
+
+<html>
+
+	<head>
+		<title>[jquery.cytoscape.js-cxtmenu.js] Cytoscape.js Context Menu Widget</title>
+
+		<link href="font-awesome-4.0.3/css/font-awesome.css" rel="stylesheet" type="text/css" />
+
+		<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+		<script src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js"></script>
+		<script src="jquery.cytoscape.js-cxtmenu.js"></script>
+
+		<style>
+			body {
+				font-family: helvetica;
+				font-size: 14px;
+			}
+			#cy {
+				width: 600px;
+				height: 600px;
+				background: #f5f5f5;
+			}
+		</style>
+
+		<script>
+			$(function(){
+				$('#cy').cytoscape({
+					ready: function(){
+						window.cy = this;
+					},
+
+					style: [
+						{
+							selector: 'node',
+							css: {
+								'content': 'data(name)'
+							}
+						},
+
+						{
+							selector: 'edge',
+							css: {
+								'target-arrow-shape': 'triangle'
+							}
+						}
+					],
+
+					elements: {
+						nodes: [
+							{ data: { id: 'j', name: 'Jerry' } },
+							{ data: { id: 'e', name: 'Elaine' } },
+							{ data: { id: 'k', name: 'Kramer' } },
+							{ data: { id: 'g', name: 'George' } }
+						],
+						edges: [
+							{ data: { source: 'j', target: 'e' } },
+							{ data: { source: 'j', target: 'k' } },
+							{ data: { source: 'j', target: 'g' } },
+							{ data: { source: 'e', target: 'j' } },
+							{ data: { source: 'e', target: 'k' } },
+							{ data: { source: 'k', target: 'j' } },
+							{ data: { source: 'k', target: 'e' } },
+							{ data: { source: 'k', target: 'g' } },
+							{ data: { source: 'g', target: 'j' } }
+						]
+					},
+				});
+
+				$('#cy').cytoscapeCxtmenu({
+					commands: [
+						{
+							content: '<span class="fa fa-flash fa-2x"></span>',
+							select: function(){
+								console.log( this.id() );
+							}
+						},
+
+						{
+							content: '<span class="fa fa-star fa-2x"></span>',
+							select: function(){
+								console.log( this.data('name') );
+							}
+						},
+
+						{
+							content: 'Text',
+							select: function(){
+								console.log( this.position() );
+							}
+						}
+					]
+				});
+			});
+		</script>
+	</head>
+
+	<body>
+		<h1>[jquery.cytoscape.js-cxtmenu.js] Cytoscape.js Context Menu Demo</h1>
+
+		<div id="cy"></div>
+	</body>
+
+</html>
