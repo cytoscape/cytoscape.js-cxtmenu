@@ -46,11 +46,27 @@
 
 		var functions = {
 			destroy: function(){
-				
+				var data = $(this).data('cytoscapeCxtmenu'); 
+				var options = data.options;
+				var handlers = data.handlers;
+				var cy = data.cy;
+
+				// remove bound cy handlers
+				for( var i = 0; i < handlers.length; i++ ){
+					var handler = handlers[i];
+					cy.off( handler.events, handler.selector, handler.fn );
+				}
+
+				// remove container from dom
+				data.$container.remove();
 			},
 				
 			init: function(){
-				var $wrapper = $('<div class="cxtmenu"></div>');
+				var data = {
+					options: options,
+					handlers: []
+				};
+				var $wrapper = $('<div class="cxtmenu"></div>'); data.$container = $wrapper;
 				var $parent = $('<div></div>');
 				var $canvas = $('<canvas></canvas>');
 				var c2d = $canvas[0].getContext('2d');
@@ -207,8 +223,22 @@
 				var ctrx, ctry, rs;
 				var tapendHandler;
 
+				var bindings = {
+					on: function(events, selector, fn){
+						data.handlers.push({
+							events: events,
+							selector: selector,
+							fn: fn
+						});
+
+						cy.on(events, selector, fn);
+
+						return this;
+					}
+				};
+
 				function addEventListeners(){
-					cy
+					bindings
 						.on('cxttapstart', options.selector, function(e){
 							var ele = this;
 							var rp = ele.renderedPosition();
@@ -343,8 +373,11 @@
 
 				$container.cytoscape(function(e){
 					cy = this;
+					data.cy = cy;
 
 					addEventListeners();
+
+					$container.data('cytoscapeCxtmenu', data);
 				});
 			}
 		};
