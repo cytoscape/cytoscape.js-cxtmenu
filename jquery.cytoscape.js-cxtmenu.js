@@ -2,13 +2,13 @@
 	
 	var defaults = {
 		menuRadius: 100, // the radius of the circular menu in pixels
-		selector: 'node', // nodes matching this Cytoscape.js selector will trigger cxtmenus
+		selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
 		commands: [ // an array of commands to list in the menu
 			/*
 			{ // example command
 				content: 'a command name' // html/text content to be displayed in the menu
 				select: function(){ // a function to execute when the command is selected
-					console.log( this.id() ) // `this` holds the reference to the active node
+					console.log( this.id() ) // `this` holds the reference to the active element
 				}
 			}
 			*/
@@ -18,7 +18,7 @@
 		activePadding: 20, // additional size in pixels for the active command
 		indicatorSize: 24, // the size in pixels of the pointer to the active command
 		separatorWidth: 3, // the empty spacing in pixels between successive commands
-		spotlightPadding: 4, // extra spacing in pixels between the node and the spotlight
+		spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
 		minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
 		maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
 		itemColor: 'white', // the colour of text in the command's content
