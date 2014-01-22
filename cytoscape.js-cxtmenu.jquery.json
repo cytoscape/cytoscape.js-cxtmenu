@@ -1,6 +1,6 @@
 {
 	"name": "cytoscape.js-cxtmenu",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "A circular context menu for Cytoscape.js.",
 	"title": "Cytoscape.js Context Menu",
 	"keywords": [
@@ -13,7 +13,7 @@
 	],
 	"dependencies": {
 		"jquery": ">=1.4",
-		"cytoscape": ">=2.0"
+		"cytoscape": ">=2.1"
 	}, 
 	"licenses": [
 		{

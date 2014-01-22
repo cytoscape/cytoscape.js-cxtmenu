@@ -11,7 +11,7 @@ This plugin creates a widget that lets the user operate circular context menus o
 ## Dependencies
 
  * jQuery >=1.4
- * Cytoscape.js >=2.0
+ * Cytoscape.js >=2.1
 
 
 ## Initialisation
