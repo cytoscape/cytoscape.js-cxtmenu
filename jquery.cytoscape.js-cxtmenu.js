@@ -241,9 +241,18 @@
 					bindings
 						.on('cxttapstart', options.selector, function(e){
 							var ele = this;
-							var rp = ele.renderedPosition();
-							var rw = ele.renderedWidth();
-							var rh = ele.renderedHeight();
+
+							var rp, rw, rh;
+							if( ele.isNode() ){
+								rp = ele.renderedPosition();
+								rw = ele.renderedWidth();
+								rh = ele.renderedHeight();
+							} else {
+								rp = e.cyRenderedPosition;
+								rw = 1;
+								rh = 1;
+							}
+
 							var scrollLeft = $(window).scrollLeft();
 							var scrollTop = $(window).scrollTop();
 							offset = getOffset( $container );
