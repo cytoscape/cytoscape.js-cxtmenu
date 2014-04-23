@@ -25,7 +25,7 @@ $('#cy').cytoscape({
 });
 
 // the default values of each option are outlined below:
-$('#cy').cytoscapeCxtmenu(
+$('#cy').cytoscapeCxtmenu({
 	menuRadius: 100, // the radius of the circular menu in pixels
 	selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
 	commands: [ // an array of commands to list in the menu
