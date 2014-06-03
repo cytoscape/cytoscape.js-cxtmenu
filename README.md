@@ -20,12 +20,13 @@ You initialise the plugin on the same HTML DOM element container used for Cytosc
 
 ```js
 
-$('#cy').cytoscape({
+var cy = cytoscape({
+	container: document.getElementById('cy'),
 	/* ... */
 });
 
 // the default values of each option are outlined below:
-$('#cy').cytoscapeCxtmenu({
+var defaults = {
 	menuRadius: 100, // the radius of the circular menu in pixels
 	selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
 	commands: [ // an array of commands to list in the menu
@@ -49,6 +50,11 @@ $('#cy').cytoscapeCxtmenu({
 	itemColor: 'white', // the colour of text in the command's content
 	itemTextShadowColor: 'black', // the text shadow colour of the command's content
 	zIndex: 9999 // the z-index of the ui div
-});	
+};
+
+cy.cxtmenu( defaults );
+
+// or via jquery
+// $('#cy').cytoscapeCxtmenu( defaults );	
 
 ```

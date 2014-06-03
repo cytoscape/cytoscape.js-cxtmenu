@@ -3,7 +3,7 @@
 <html>
 
 	<head>
-		<title>[jquery.cytoscape.js-cxtmenu.js] Cytoscape.js Context Menu Widget</title>
+		<title>[cytoscape.js-cxtmenu.js] Cytoscape.js Context Menu Widget</title>
 
 		<link href="font-awesome-4.0.3/css/font-awesome.css" rel="stylesheet" type="text/css" />
 
@@ -14,7 +14,7 @@
 		<!-- for local debug -->
 		<!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
 
-		<script src="jquery.cytoscape.js-cxtmenu.js"></script>
+		<script src="cytoscape.js-cxtmenu.js"></script>
 
 		<style>
 			body {
@@ -30,9 +30,12 @@
 
 		<script>
 			$(function(){
-				$('#cy').cytoscape({
+				
+				var cy = cytoscape({
+					container: document.getElementById('cy'),
+
 					ready: function(){
-						window.cy = this;
+						
 					},
 
 					style: [
@@ -72,7 +75,7 @@
 					},
 				});
 
-				$('#cy').cytoscapeCxtmenu({
+				cy.cxtmenu({
 					commands: [
 						{
 							content: '<span class="fa fa-flash fa-2x"></span>',
@@ -101,7 +104,7 @@
 	</head>
 
 	<body>
-		<h1>[jquery.cytoscape.js-cxtmenu.js] Cytoscape.js Context Menu Demo</h1>
+		<h1>[cytoscape.js-cxtmenu.js] Cytoscape.js Context Menu Demo</h1>
 
 		<div id="cy"></div>
 	</body>

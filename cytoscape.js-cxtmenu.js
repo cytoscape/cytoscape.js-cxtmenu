@@ -1,4 +1,4 @@
-;(function($){
+;(function($, $$){
 	
 	var defaults = {
 		menuRadius: 100, // the radius of the circular menu in pixels
@@ -403,5 +403,11 @@
 	};
 
 	$.fn.cyCxtMenu = $.fn.cytoscapeCxtmenu;
+
+	$$('core', 'cxtmenu', function( options ){
+    var cy = this;
+
+    $( cy.container() ).cytoscapeCxtmenu( options );
+  });
 	
-})(jQuery);
+})(jQuery, cytoscape);
