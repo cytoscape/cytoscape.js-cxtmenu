@@ -31,6 +31,7 @@
 		var fn = params;
 		var $container = $(this);
 		var cy;
+		var target;
 		
 		function getOffset( $ele ){
 			var offset = $ele.offset();
@@ -145,6 +146,22 @@
 					theta2 += dtheta;
 				}
 
+				// Left click hides menu and triggers command
+				$(document).on('click', function() {
+                    $parent.hide();
+                });
+
+                $wrapper.on('click', function() {
+                    if (activeCommandI !== undefined && !!target) {
+                        var select = options.commands[activeCommandI].select;
+
+                        if (select) {
+                            select.apply(target);
+                        }
+                    }
+                });
+
+
 				function drawBg( rspotlight ){
 					rspotlight = rspotlight !== undefined ? rspotlight : rs;
 
@@ -240,6 +257,7 @@
 				function addEventListeners(){
 					bindings
 						.on('cxttapstart', options.selector, function(e){
+							target = this; // Remember which node the context menu is for
 							var ele = this;
 
 							var rp, rw, rh;
