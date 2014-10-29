@@ -41,7 +41,7 @@ require(['cytoscape', 'cytoscape-cxtmenu', 'jquery'], function( cytoscape, cxtme
 });
 ```
 
-Note that `jquery` must point to a jQuery object with `.qtip()` registered if any sort of `require()` is used.
+Note that `jquery` must point to a jQuery object if any sort of `require()` is used.
 
 Plain HTML/JS has the extension registered for you automatically, because no `require()` is needed.
 
