@@ -1,20 +1,51 @@
-cytoscape.js-cxtmenu
-====================
+cytoscape-cxtmenu
+================================================================================
 
 ![Preview](https://raw2.github.com/cytoscape/cytoscape.js-cxtmenu/master/img/preview.png)
 
 ## Description
+
+A context menu for Cytoscape.js
 
 This plugin creates a widget that lets the user operate circular context menus on nodes in Cytoscape.js.  The user swipes along the circular menu to select a menu item and perform a command on the node of interest.
 
 
 ## Dependencies
 
- * jQuery >=1.4
- * Cytoscape.js >=2.1
+ * Cytoscape.js >= 2.2
 
 
-## Initialisation
+## Usage instructions
+
+Download the library:
+ * via npm: `npm install cytoscape-cxtmenu`,
+ * via bower: `bower install cytoscape-cxtmenu`, or
+ * via direct download in the repository (probably from a tag).
+
+`require()` the library as appropriate for your project:
+
+CommonJS:
+```js
+var cytoscape = require('cytoscape');
+var jquery = require('jquery');
+var cxtmenu = require('cxtmenu');
+
+cxtmenu( cytoscape, jquery ); // register extension
+```
+
+AMD:
+```js
+require(['cytoscape', 'cxtmenu', 'jquery'], function( cytoscape, cxtmenu, jquery ){
+  cxtmenu( cytoscape, jquery ); // register extension
+});
+```
+
+Note that `jquery` must point to a jQuery object with `.qtip()` registered if any sort of `require()` is used.
+
+Plain HTML/JS has the extension registered for you automatically, because no `require()` is needed.
+
+
+## API
 
 You initialise the plugin on the same HTML DOM element container used for Cytoscape.js:
 
@@ -54,7 +85,11 @@ var defaults = {
 
 cy.cxtmenu( defaults );
 
-// or via jquery
-// $('#cy').cytoscapeCxtmenu( defaults );	
 
-```
+## Publishing instructions
+
+This project is set up to automatically be published to npm and bower.  To publish:
+
+1. Set the version number environment variable: `export VERSION=1.2.3`
+1. Publish: `gulp publish`
+1. If publishing to bower for the first time, you'll need to run `bower register cytoscape-cxtmenu https://github.com/cytoscape/cytoscape.js-cxtmenu.git`
