@@ -85,6 +85,7 @@ var defaults = {
 };
 
 cy.cxtmenu( defaults );
+```
 
 
 ## Publishing instructions
