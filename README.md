@@ -29,14 +29,14 @@ CommonJS:
 ```js
 var cytoscape = require('cytoscape');
 var jquery = require('jquery');
-var cxtmenu = require('cxtmenu');
+var cxtmenu = require('cytoscape-cxtmenu');
 
 cxtmenu( cytoscape, jquery ); // register extension
 ```
 
 AMD:
 ```js
-require(['cytoscape', 'cxtmenu', 'jquery'], function( cytoscape, cxtmenu, jquery ){
+require(['cytoscape', 'cytoscape-cxtmenu', 'jquery'], function( cytoscape, cxtmenu, jquery ){
   cxtmenu( cytoscape, jquery ); // register extension
 });
 ```
