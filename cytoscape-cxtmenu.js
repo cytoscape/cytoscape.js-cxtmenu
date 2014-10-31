@@ -60,6 +60,7 @@
       var r = options.menuRadius;
       var containerSize = (r + options.activePadding)*2;
       var activeCommandI = undefined;
+      var lock = false;
       var offset;
 
       $container.append( $wrapper );
@@ -145,6 +146,15 @@
               select.apply(target);
           }
         }
+      });
+
+      $wrapper.on('mouseleave', function() {
+        lock = true;
+        activeCommandI = undefined;
+      });
+
+      $wrapper.on('mouseenter', function() {
+        lock = false;
       });
 
 
@@ -331,8 +341,10 @@
                 c2d.closePath();
                 c2d.fill();
                 //c2d.stroke();
-
-                activeCommandI = i;
+                if (!lock) {
+                  activeCommandI = i;  
+                }
+                
 
                 break;
               }
