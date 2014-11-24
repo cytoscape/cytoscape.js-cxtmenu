@@ -64,7 +64,7 @@ var defaults = {
 	commands: [ // an array of commands to list in the menu
 		/*
 		{ // example command
-			content: 'a command name' // html/text content to be displayed in the menu
+			content: 'a command name', // html/text content to be displayed in the menu
 			select: function(){ // a function to execute when the command is selected
 				console.log( this.id() ) // `this` holds the reference to the active element
 			}
