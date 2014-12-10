@@ -23,7 +23,8 @@
     maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
     itemColor: 'white', // the colour of text in the command's content
     itemTextShadowColor: 'black', // the text shadow colour of the command's content
-    zIndex: 9999 // the z-index of the ui div
+    zIndex: 9999, // the z-index of the ui div
+    autoHide: true  //automatically hide the menu when the user releases mouse, if false, right click to show, then click to hide
   };
 
   // registers the extension on a cytoscape lib ref
@@ -223,64 +224,8 @@
         }
       }
 
-      var ctrx, ctry, rs;
-      var tapendHandler;
-
-      var bindings = {
-        on: function(events, selector, fn){
-          data.handlers.push({
-            events: events,
-            selector: selector,
-            fn: fn
-          });
-
-          cy.on(events, selector, fn);
-
-          return this;
-        }
-      };
-
-      function addEventListeners(){
-        bindings
-          .on('cxttapstart', options.selector, function(e){
-            target = this; // Remember which node the context menu is for
-            var ele = this;
-
-            var rp, rw, rh;
-            if( ele.isNode() ){
-              rp = ele.renderedPosition();
-              rw = ele.renderedWidth();
-              rh = ele.renderedHeight();
-            } else {
-              rp = e.cyRenderedPosition;
-              rw = 1;
-              rh = 1;
-            }
-
-            var scrollLeft = $(window).scrollLeft();
-            var scrollTop = $(window).scrollTop();
-            offset = getOffset( $container );
-
-            ctrx = rp.x;
-            ctry = rp.y;
-
-            $parent.show().css({
-              'left': rp.x - r + 'px',
-              'top': rp.y - r + 'px'
-            });
-
-            rs = Math.max(rw, rh)/2;
-            rs = Math.max(rs, options.minSpotlightRadius);
-            rs = Math.min(rs, options.maxSpotlightRadius);
-
-            drawBg();
-
-            activeCommandI = undefined;
-          })
-
-          .on('cxtdrag', options.selector, function(e){ rateLimitedCall(function(){
-
-            var dx = e.originalEvent.pageX - offset.left - ctrx;
+      function handleMouseMovement(e) {
+          var dx = e.originalEvent.pageX - offset.left - ctrx;
             var dy = e.originalEvent.pageY - offset.top - ctry;
 
             if( dx === 0 ){ dx = 0.01; }
@@ -291,7 +236,9 @@
 
             activeCommandI = undefined;
 
-            if( d < rs + options.spotlightPadding ){
+
+            //Check if the mouse is inside of the menu bounds, if not, just draw and exit
+            if( d < rs + options.spotlightPadding || rs + options.spotlightPadding + options.menuRadius < d){
               drawBg();
               return;
             }
@@ -363,12 +310,78 @@
             c2d.fill();
 
             c2d.globalCompositeOperation = 'source-over';
+      }
+      var ctrx, ctry, rs;
+      var tapendHandler;
+
+      var bindings = {
+        on: function(events, selector, fn){
+          data.handlers.push({
+            events: events,
+            selector: selector,
+            fn: fn
+          });
+
+          cy.on(events, selector, fn);
+
+          return this;
+        }
+      };
+
+      function addEventListeners(){
+        bindings
+          .on('cxttapstart', options.selector, function(e){
+            target = this; // Remember which node the context menu is for
+            var ele = this;
+
+            var rp, rw, rh;
+            if( ele.isNode() ){
+              rp = ele.renderedPosition();
+              rw = ele.renderedWidth();
+              rh = ele.renderedHeight();
+            } else {
+              rp = e.cyRenderedPosition;
+              rw = 1;
+              rh = 1;
+            }
+
+            var scrollLeft = $(window).scrollLeft();
+            var scrollTop = $(window).scrollTop();
+            offset = getOffset( $container );
+
+            ctrx = rp.x;
+            ctry = rp.y;
+
+            $parent.show().css({
+              'left': rp.x - r + 'px',
+              'top': rp.y - r + 'px'
+            });
+
+            if (!options.autoHide) {
+                $parent.on('mousemove', function(e){ rateLimitedCall(function(){
+                    handleMouseMovement(e);
+                })});
+            }
+        
+            rs = Math.max(rw, rh)/2;
+            rs = Math.max(rs, options.minSpotlightRadius);
+            rs = Math.min(rs, options.maxSpotlightRadius);
+
+            drawBg();
+
+            activeCommandI = undefined;
+          })
+          
+          .on('cxtdrag', options.selector, function(e){ rateLimitedCall(function(){
+                handleMouseMovement(e);
+            
           }) })
 
           .on('cxttapend', options.selector, function(e){
             var ele = this;
-            $parent.hide();
-
+            if (options.autoHide) {
+              $parent.hide();
+            }
             if( activeCommandI !== undefined ){
               var select = options.commands[ activeCommandI ].select;
 
@@ -379,7 +392,9 @@
           })
 
           .on('cxttapend', function(e){
-            $parent.hide();
+            if (options.autoHide) {
+              $parent.hide();
+            }
           })
         ;
       }
