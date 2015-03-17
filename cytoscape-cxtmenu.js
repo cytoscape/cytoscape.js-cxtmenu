@@ -132,20 +132,29 @@
         theta2 += dtheta;
       }
 
-      // Left click hides menu and triggers command
-      $(document).on('click', function() {
-        $parent.hide();
-      });
+      var hideParentOnClick, selectOnClickWrapper;
 
-      $wrapper.on('click', function() {
-        if (activeCommandI !== undefined && !!target) {
-          var select = options.commands[activeCommandI].select;
+      function addDomListeners(){
+        // Left click hides menu and triggers command
+        $(document).on('click', hideParentOnClick = function() {
+          $parent.hide();
+        });
 
-          if (select) {
-              select.apply(target);
+        $wrapper.on('click', selectOnClickWrapper = function() {
+          if (activeCommandI !== undefined && !!target) {
+            var select = options.commands[activeCommandI].select;
+
+            if (select) {
+                select.apply(target);
+            }
           }
-        }
-      });
+        });
+      }
+
+      function removeDomListeners(){
+        $(document).off('click', hideParentOnClick);
+        $wrapper.off('click', selectOnClickWrapper);
+      }
 
 
       function drawBg( rspotlight ){
@@ -234,7 +243,15 @@
             fn: fn
           });
 
-          cy.on(events, selector, fn);
+          if( selector === 'core' ){
+            cy.on(events, function( e ){
+              if( e.cyTarget === cy ){ // only if event target is directly core
+                return fn.apply( this, [ e ] );
+              }
+            });
+          } else {
+            cy.on(events, selector, fn);
+          }
 
           return this;
         }
@@ -245,9 +262,10 @@
           .on('cxttapstart', options.selector, function(e){
             target = this; // Remember which node the context menu is for
             var ele = this;
+            var isCy = this === cy;
 
             var rp, rw, rh;
-            if( ele.isNode() ){
+            if( !isCy && ele.isNode() ){
               rp = ele.renderedPosition();
               rw = ele.renderedWidth();
               rh = ele.renderedHeight();
@@ -383,8 +401,35 @@
           })
         ;
       }
+
+      function removeEventListeners(){
+        var handlers = data.handlers;
+
+        for( var i = 0; i < handlers.length; i++ ){
+          var h = handlers[i];
+
+          if( h.selector === 'core' ){
+            cy.off(h.events, h.fn);
+          } else {
+            cy.off(h.events, h.selector, h.fn);
+          }
+        }
+      }
+
+      function destroyInstance(){
+        removeEventListeners();
+
+        removeDomListeners();
+        $wrapper.remove();
+      }
         
       addEventListeners();
+
+      return {
+        destroy: function(){
+          destroyInstance();
+        }
+      };
 
     });
 

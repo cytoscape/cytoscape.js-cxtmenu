@@ -84,7 +84,15 @@ var defaults = {
 	zIndex: 9999 // the z-index of the ui div
 };
 
-cy.cxtmenu( defaults );
+var cxtmenuApi = cy.cxtmenu( defaults );
+```
+
+You get access to the cxtmenu API as the returned value of calling the extension.  You can use this to clean up and destroy the menu instance:
+
+```js
+var cxtmenuApi = cy.cxtmenu( someOptions );
+
+cxtmenuApi.destroy();
 ```
 
 

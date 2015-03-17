@@ -84,6 +84,8 @@
 				});
 
 				cy.cxtmenu({
+					selector: 'node',
+
 					commands: [
 						{
 							content: '<span class="fa fa-flash fa-2x"></span>',
@@ -103,6 +105,26 @@
 							content: 'Text',
 							select: function(){
 								console.log( this.position() );
+							}
+						}
+					]
+				});
+
+				cy.cxtmenu({
+					selector: 'core',
+
+					commands: [
+						{
+							content: 'bg1',
+							select: function(){
+								console.log( 'bg1' );
+							}
+						},
+
+						{
+							content: 'bg2',
+							select: function(){
+								console.log( 'bg2' );
 							}
 						}
 					]
