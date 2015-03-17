@@ -46,6 +46,11 @@ Note that `jquery` must point to a jQuery object if any sort of `require()` is u
 Plain HTML/JS has the extension registered for you automatically, because no `require()` is needed.
 
 
+## CSS
+
+You can style the font of the command text with the `cxtmenu-content` class.
+
+
 ## API
 
 You initialise the plugin on the same HTML DOM element container used for Cytoscape.js:
