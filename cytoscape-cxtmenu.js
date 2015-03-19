@@ -258,11 +258,20 @@
       };
 
       function addEventListeners(){
+        var grabbable;
+        var inGesture = false;
+        var dragHandler;
+
         bindings
-          .on('cxttapstart', options.selector, function(e){
+          .on('cxttapstart taphold', options.selector, function(e){
             target = this; // Remember which node the context menu is for
             var ele = this;
             var isCy = this === cy;
+
+            grabbable = target.grabbable();
+            if( grabbable ){
+              target.ungrabify();
+            }
 
             var rp, rw, rh;
             if( !isCy && ele.isNode() ){
@@ -294,9 +303,13 @@
             drawBg();
 
             activeCommandI = undefined;
+
+            inGesture = true;
           })
 
-          .on('cxtdrag', options.selector, function(e){ rateLimitedCall(function(){
+          .on('cxtdrag tapdrag', options.selector, dragHandler = function(e){ rateLimitedCall(function(){
+
+            if( !inGesture ){ return; }
 
             var dx = e.originalEvent.pageX - offset.left - ctrx;
             var dy = e.originalEvent.pageY - offset.top - ctry;
@@ -383,7 +396,9 @@
             c2d.globalCompositeOperation = 'source-over';
           }) })
 
-          .on('cxttapend', options.selector, function(e){
+          .on('tapdrag', dragHandler)
+
+          .on('cxttapend tapend', options.selector, function(e){
             var ele = this;
             $parent.hide();
 
@@ -394,10 +409,22 @@
                 select.apply( ele );
               }
             }
+
+            inGesture = false;
+
+            if( grabbable ){
+              target.grabify();
+            }
           })
 
-          .on('cxttapend', function(e){
+          .on('cxttapend tapend', function(e){
             $parent.hide();
+
+            inGesture = false;
+
+            if( grabbable ){
+              target.grabify();
+            }
           })
         ;
       }
