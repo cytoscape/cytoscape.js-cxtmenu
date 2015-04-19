@@ -7,6 +7,10 @@
     "type": "git",
     "url": "https://github.com/cytoscape/cytoscape.js-cxtmenu.git"
   },
+  "dependencies": {
+    "cytoscape": ">= 2.2",
+    "jquery":">=1.4"
+  },
   "ignore": [
     "**/.*",
     "node_modules",
