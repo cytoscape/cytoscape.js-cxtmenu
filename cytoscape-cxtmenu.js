@@ -145,7 +145,8 @@
             var select = options.commands[activeCommandI].select;
 
             if (select) {
-                select.apply(target);
+              select.apply(target);
+              activeCommandI = undefined;
             }
           }
         });
@@ -407,6 +408,7 @@
 
               if( select ){
                 select.apply( ele );
+                activeCommandI = undefined;
               }
             }
 
