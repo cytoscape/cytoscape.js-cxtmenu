@@ -269,7 +269,7 @@
             var ele = this;
             var isCy = this === cy;
 
-            grabbable = target.grabbable();
+            grabbable = target.grabble &&  target.grabbable();
             if( grabbable ){
               target.ungrabify();
             }
