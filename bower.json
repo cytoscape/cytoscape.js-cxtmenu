@@ -1,6 +1,6 @@
 {
   "name": "cytoscape-cxtmenu",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "A context menu for Cytoscape.js",
   "main": "cytoscape-cxtmenu.js",
   "repository": {
