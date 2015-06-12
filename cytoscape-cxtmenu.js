@@ -312,8 +312,14 @@
 
             if( !inGesture ){ return; }
 
-            var dx = e.originalEvent.pageX - offset.left - ctrx;
-            var dy = e.originalEvent.pageY - offset.top - ctry;
+            var origE = e.originalEvent;
+            var isTouch = origE.touches && origE.touches.length > 0;
+
+            var pageX = isTouch ? origE.touches[0].pageX : origE.pageX;
+            var pageY = isTouch ? origE.touches[0].pageY : origE.pageY;
+
+            var dx = pageX - offset.left - ctrx;
+            var dy = pageY - offset.top - ctry;
 
             if( dx === 0 ){ dx = 0.01; }
 
