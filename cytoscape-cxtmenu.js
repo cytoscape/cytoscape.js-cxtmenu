@@ -12,7 +12,7 @@
         }
       }
       */
-    ], 
+    ],
     fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
     activeFillColor: 'rgba(92, 194, 237, 0.75)', // the colour used to indicate the selected command
     activePadding: 20, // additional size in pixels for the active command
@@ -36,7 +36,7 @@
       var cy = this;
       var $container = $( cy.container() );
       var target;
-      
+
       function getOffset( $ele ){
         var offset = $ele.offset();
 
@@ -48,7 +48,7 @@
 
         return offset;
       }
-      
+
       var data = {
         options: options,
         handlers: []
@@ -115,7 +115,7 @@
           marginLeft: rx1 - r * 0.33,
           marginTop: -ry1 -r * 0.33
         });
-        
+
         var $content = $('<div class="cxtmenu-content">' + command.content + '</div>');
         $content.css({
           'width': r * 0.66,
@@ -123,7 +123,7 @@
           'vertical-align': 'middle',
           'display': 'table-cell'
         });
-        
+
         $parent.append( $item );
         $item.append( $content );
 
@@ -167,7 +167,7 @@
 
         c2d.fillStyle = options.fillColor;
         c2d.beginPath();
-        c2d.arc(r + options.activePadding, r + options.activePadding, r, 0, Math.PI*2, true); 
+        c2d.arc(r + options.activePadding, r + options.activePadding, r, 0, Math.PI*2, true);
         c2d.closePath();
         c2d.fill();
 
@@ -199,18 +199,18 @@
           theta1 += dtheta;
           theta2 += dtheta;
         }
-        
+
 
         c2d.fillStyle = 'white';
         c2d.globalCompositeOperation = 'destination-out';
         c2d.beginPath();
-        c2d.arc(r + options.activePadding, r + options.activePadding, rspotlight + options.spotlightPadding, 0, Math.PI*2, true); 
+        c2d.arc(r + options.activePadding, r + options.activePadding, rspotlight + options.spotlightPadding, 0, Math.PI*2, true);
         c2d.closePath();
         c2d.fill();
 
         c2d.globalCompositeOperation = 'source-over';
       }
-      
+
       var lastCallTime = 0;
       var minCallDelta = 1000/30;
       var endCallTimeout;
@@ -262,12 +262,28 @@
         var grabbable;
         var inGesture = false;
         var dragHandler;
+        var zoomEnabled;
+
+        var restoreZoom = function(){
+          if( zoomEnabled ){
+            cy.userZoomingEnabled( true );
+          }
+        };
+
+        var restoreGrab = function(){
+          if( grabbable ){
+            target.grabify();
+          }
+        };
 
         bindings
           .on('cxttapstart taphold', options.selector, function(e){
             target = this; // Remember which node the context menu is for
             var ele = this;
             var isCy = this === cy;
+
+            zoomEnabled = cy.userZoomingEnabled();
+            cy.userZoomingEnabled( false );
 
             grabbable = target.grabbable &&  target.grabbable();
             if( grabbable ){
@@ -338,7 +354,7 @@
 
             var rx = dx*r / d;
             var ry = dy*r / d;
-            
+
             if( dy > 0 ){
               theta = Math.PI + Math.abs(theta - Math.PI);
             }
@@ -359,7 +375,7 @@
 
               if( inThisCommand ){
                 // console.log('in command ' + i)
-                
+
                 c2d.fillStyle = options.activeFillColor;
                 c2d.strokeStyle = 'black';
                 c2d.lineWidth = 1;
@@ -385,7 +401,7 @@
             // clear the indicator
             c2d.beginPath();
             //c2d.arc(r + rx/r*(rs + options.spotlightPadding), r + ry/r*(rs + options.spotlightPadding), options.indicatorSize, 0, 2*Math.PI, true);
-          
+
             c2d.translate( r + options.activePadding + rx/r*(rs + options.spotlightPadding - options.indicatorSize/4), r + options.activePadding + ry/r*(rs + options.spotlightPadding - options.indicatorSize/4) );
             c2d.rotate( Math.PI/4 - theta );
             c2d.fillRect(-options.indicatorSize/2, -options.indicatorSize/2, options.indicatorSize, options.indicatorSize);
@@ -396,7 +412,7 @@
 
             // clear the spotlight
             c2d.beginPath();
-            c2d.arc(r + options.activePadding, r + options.activePadding, rs + options.spotlightPadding, 0, Math.PI*2, true); 
+            c2d.arc(r + options.activePadding, r + options.activePadding, rs + options.spotlightPadding, 0, Math.PI*2, true);
             c2d.closePath();
             c2d.fill();
 
@@ -420,9 +436,8 @@
 
             inGesture = false;
 
-            if( grabbable ){
-              target.grabify();
-            }
+            restoreGrab();
+            restoreZoom();
           })
 
           .on('cxttapend tapend', function(e){
@@ -430,9 +445,8 @@
 
             inGesture = false;
 
-            if( grabbable ){
-              target.grabify();
-            }
+            restoreGrab();
+            restoreZoom();
           })
         ;
       }
@@ -457,7 +471,7 @@
         removeDomListeners();
         $wrapper.remove();
       }
-        
+
       addEventListeners();
 
       return {
