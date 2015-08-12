@@ -35,6 +35,11 @@
 				opacity: 0.5;
 				font-size: 1em;
 			}
+			
+			/* you can set the disabled style how you like on the text/icon */
+			.cxtmenu-item-disabled {
+				opacity: 0.333;
+			}
 		</style>
 
 		<script>
@@ -98,7 +103,8 @@
 							content: '<span class="fa fa-star fa-2x"></span>',
 							select: function(){
 								console.log( this.data('name') );
-							}
+							},
+							disabled: true
 						},
 
 						{

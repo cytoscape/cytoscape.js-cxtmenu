@@ -115,6 +115,10 @@
           marginLeft: rx1 - r * 0.33,
           marginTop: -ry1 -r * 0.33
         });
+        
+        if( command.disabled ){
+          $item.addClass('cxtmenu-item-disabled');
+        }
 
         var $content = $('<div class="cxtmenu-content">' + command.content + '</div>');
         $content.css({
@@ -372,6 +376,10 @@
 
               var inThisCommand = theta1 <= theta && theta <= theta2
                 || theta1 <= theta + 2*Math.PI && theta + 2*Math.PI <= theta2;
+                
+              if( command.disabled ){
+                inThisCommand = false;
+              }
 
               if( inThisCommand ){
                 // console.log('in command ' + i)
