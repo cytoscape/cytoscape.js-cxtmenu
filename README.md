@@ -48,7 +48,7 @@ Plain HTML/JS has the extension registered for you automatically, because no `re
 
 ## CSS
 
-You can style the font of the command text with the `cxtmenu-content` class.
+You can style the font of the command text with the `cxtmenu-content` class, and you can style disabled entries with the `cxtmenu-disabled` class.
 
 
 ## API

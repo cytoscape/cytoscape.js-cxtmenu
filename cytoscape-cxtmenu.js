@@ -115,10 +115,6 @@
           marginLeft: rx1 - r * 0.33,
           marginTop: -ry1 -r * 0.33
         });
-        
-        if( command.disabled ){
-          $item.addClass('cxtmenu-item-disabled');
-        }
 
         var $content = $('<div class="cxtmenu-content">' + command.content + '</div>');
         $content.css({
@@ -127,6 +123,10 @@
           'vertical-align': 'middle',
           'display': 'table-cell'
         });
+        
+        if( command.disabled ){
+          $content.addClass('cxtmenu-disabled');
+        }
 
         $parent.append( $item );
         $item.append( $content );
