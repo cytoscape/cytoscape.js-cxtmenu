@@ -140,11 +140,11 @@
 
       function addDomListeners(){
         // Left click hides menu and triggers command
-        $(document).on('click', hideParentOnClick = function() {
+        $(document).on('click.ctxmenu', hideParentOnClick = function() {
           $parent.hide();
         });
 
-        $wrapper.on('click', selectOnClickWrapper = function() {
+        $wrapper.on('click.ctxmenu', selectOnClickWrapper = function() {
           if (activeCommandI !== undefined && !!target) {
             var select = options.commands[activeCommandI].select;
 
@@ -157,8 +157,8 @@
       }
 
       function removeDomListeners(){
-        $(document).off('click', hideParentOnClick);
-        $wrapper.off('click', selectOnClickWrapper);
+        $(document).off('click.ctxmenu');
+        $wrapper.off('click.ctxmenu');
       }
 
 
