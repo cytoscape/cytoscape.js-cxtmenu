@@ -123,7 +123,7 @@
           'vertical-align': 'middle',
           'display': 'table-cell'
         });
-        
+
         if( command.disabled ){
           $content.addClass('cxtmenu-disabled');
         }
@@ -137,30 +137,6 @@
       }
 
       var hideParentOnClick, selectOnClickWrapper;
-
-      function addDomListeners(){
-        // Left click hides menu and triggers command
-        $(document).on('click', hideParentOnClick = function() {
-          $parent.hide();
-        });
-
-        $wrapper.on('click', selectOnClickWrapper = function() {
-          if (activeCommandI !== undefined && !!target) {
-            var select = options.commands[activeCommandI].select;
-
-            if (select) {
-              select.apply(target);
-              activeCommandI = undefined;
-            }
-          }
-        });
-      }
-
-      function removeDomListeners(){
-        $(document).off('click', hideParentOnClick);
-        $wrapper.off('click', selectOnClickWrapper);
-      }
-
 
       function drawBg( rspotlight ){
         rspotlight = rspotlight !== undefined ? rspotlight : rs;
@@ -376,7 +352,7 @@
 
               var inThisCommand = theta1 <= theta && theta <= theta2
                 || theta1 <= theta + 2*Math.PI && theta + 2*Math.PI <= theta2;
-                
+
               if( command.disabled ){
                 inThisCommand = false;
               }
@@ -476,7 +452,6 @@
       function destroyInstance(){
         removeEventListeners();
 
-        removeDomListeners();
         $wrapper.remove();
       }
 
