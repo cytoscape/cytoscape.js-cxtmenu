@@ -89,7 +89,6 @@
       var dtheta = 2 * Math.PI / (commands.length);
       var theta1 = commands.length % 2 !== 0 ? Math.PI / 2 : 0;
       var theta2 = theta1 + dtheta;
-      var $items = [];
 
       for (var i = 0; i < commands.length; i++) {
         var command = commands[i];
@@ -308,7 +307,13 @@
             var ele = this;
             var isCy = this === cy;
 
-            commands = options.commands(target);
+            if (options.dynamicCommands) {
+              commands = options.dynamicCommands(target);
+            }
+            else {
+              commands = options.commands;
+            }
+
             if (!commands || commands.length == 0) return;
 
             zoomEnabled = cy.userZoomingEnabled();
