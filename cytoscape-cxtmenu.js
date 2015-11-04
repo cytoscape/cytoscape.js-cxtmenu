@@ -56,6 +56,7 @@
       var $wrapper = $('<div class="cxtmenu"></div>'); data.$container = $wrapper;
       var $parent = $('<div></div>');
       var $canvas = $('<canvas></canvas>');
+      var commands = [];
       var c2d = $canvas[0].getContext('2d');
       var r = options.menuRadius;
       var containerSize = (r + options.activePadding)*2;
@@ -83,18 +84,19 @@
       $canvas[0].width = containerSize;
       $canvas[0].height = containerSize;
 
-      var commands = options.commands;
-      var dtheta = 2*Math.PI/(commands.length);
-      var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
+    function createMenuItems() {
+      $('.cxtmenu-item').remove();
+      var dtheta = 2 * Math.PI / (commands.length);
+      var theta1 = commands.length % 2 !== 0 ? Math.PI / 2 : 0;
       var theta2 = theta1 + dtheta;
       var $items = [];
 
-      for( var i = 0; i < commands.length; i++ ){
+      for (var i = 0; i < commands.length; i++) {
         var command = commands[i];
 
-        var midtheta = (theta1 + theta2)/2;
-        var rx1 = 0.66 * r * Math.cos( midtheta );
-        var ry1 = 0.66 * r * Math.sin( midtheta );
+        var midtheta = (theta1 + theta2) / 2;
+        var rx1 = 0.66 * r * Math.cos(midtheta);
+        var ry1 = 0.66 * r * Math.sin(midtheta);
 
         var $item = $('<div class="cxtmenu-item"></div>');
         $item.css({
@@ -111,7 +113,7 @@
           width: r * 0.66,
           height: r * 0.66,
           marginLeft: rx1 - r * 0.33,
-          marginTop: -ry1 -r * 0.33
+          marginTop: -ry1 - r * 0.33
         });
 
         var $content = $('<div class="cxtmenu-content">' + command.content + '</div>');
@@ -122,18 +124,18 @@
           'display': 'table-cell'
         });
 
-        if( command.disabled ){
+        if (command.disabled) {
           $content.addClass('cxtmenu-disabled');
         }
 
-        $parent.append( $item );
-        $item.append( $content );
+        $parent.append($item);
+        $item.append($content);
 
 
         theta1 += dtheta;
         theta2 += dtheta;
       }
-
+    }
       var hideParentOnClick, selectOnClickWrapper;
 
       function queueDrawBg( rspotlight ){
@@ -156,7 +158,6 @@
         c2d.globalCompositeOperation = 'destination-out';
         c2d.strokeStyle = 'white';
         c2d.lineWidth = options.separatorWidth;
-        var commands = options.commands;
         var dtheta = 2*Math.PI/(commands.length);
         var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
         var theta2 = theta1 + dtheta;
@@ -192,7 +193,6 @@
       }
 
       function drawCommands( rx, ry, theta ){
-        var commands = options.commands;
         var dtheta = 2*Math.PI/(commands.length);
         var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
         var theta2 = theta1 + dtheta;
@@ -308,6 +308,9 @@
             var ele = this;
             var isCy = this === cy;
 
+            commands = options.commands(target);
+            if (!commands || commands.length == 0) return;
+
             zoomEnabled = cy.userZoomingEnabled();
             cy.userZoomingEnabled( false );
 
@@ -336,6 +339,8 @@
 
             ctrx = rp.x;
             ctry = rp.y;
+
+            createMenuItems();
 
             $parent.show().css({
               'left': rp.x - r + 'px',
@@ -374,7 +379,7 @@
             var cosTheta = (dy*dy - d*d - dx*dx)/(-2 * d * dx);
             var theta = Math.acos( cosTheta );
 
-            if( d < rs + options.spotlightPadding ){
+            if( d < rs + options.spotlightPadding || d > rs + options.spotlightPadding + options.menuRadius){
               queueDrawBg();
               return;
             }
@@ -388,7 +393,6 @@
               theta = Math.PI + Math.abs(theta - Math.PI);
             }
 
-            var commands = options.commands;
             var dtheta = 2*Math.PI/(commands.length);
             var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
             var theta2 = theta1 + dtheta;
@@ -422,7 +426,7 @@
             $parent.hide();
 
             if( activeCommandI !== undefined ){
-              var select = options.commands[ activeCommandI ].select;
+              var select = commands[ activeCommandI ].select;
 
               if( select ){
                 select.apply( ele );
