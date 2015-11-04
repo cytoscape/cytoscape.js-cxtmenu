@@ -76,6 +76,11 @@ var defaults = {
 		}
 		*/
 	], 
+	dynamicCommands: function(elem) { // when present 'commands' is ignored
+		var data = elem.data();
+		// return an array of commands to list in the menu for active element
+		return data.menuItems; // assumes an array of commands as above
+	},
 	fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
 	activeFillColor: 'rgba(92, 194, 237, 0.75)', // the colour used to indicate the selected command
 	activePadding: 20, // additional size in pixels for the active command
