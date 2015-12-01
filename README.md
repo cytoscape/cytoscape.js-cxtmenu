@@ -64,34 +64,29 @@ var cy = cytoscape({
 
 // the default values of each option are outlined below:
 var defaults = {
-	menuRadius: 100, // the radius of the circular menu in pixels
-	selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
-	commands: [ // an array of commands to list in the menu
-		/*
-		{ // example command
-			content: 'a command name', // html/text content to be displayed in the menu
-			select: function(){ // a function to execute when the command is selected
-				console.log( this.id() ) // `this` holds the reference to the active element
-			}
-		}
-		*/
-	], 
-	dynamicCommands: function(elem) { // when present 'commands' is ignored
-		var data = elem.data();
-		// return an array of commands to list in the menu for active element
-		return data.menuItems; // assumes an array of commands as above
-	},
-	fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
-	activeFillColor: 'rgba(92, 194, 237, 0.75)', // the colour used to indicate the selected command
-	activePadding: 20, // additional size in pixels for the active command
-	indicatorSize: 24, // the size in pixels of the pointer to the active command
-	separatorWidth: 3, // the empty spacing in pixels between successive commands
-	spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
-	minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
-	maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
-	itemColor: 'white', // the colour of text in the command's content
-	itemTextShadowColor: 'black', // the text shadow colour of the command's content
-	zIndex: 9999 // the z-index of the ui div
+  menuRadius: 100, // the radius of the circular menu in pixels
+  selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
+  commands: [ // an array of commands to list in the menu or a function that returns the array
+    /*
+    { // example command
+      content: 'a command name' // html/text content to be displayed in the menu
+      select: function(ele){ // a function to execute when the command is selected
+        console.log( ele.id() ) // `ele` holds the reference to the active element
+      }
+    }
+    */
+  ], // function( ele ){ return [ /*...*/ ] }, // example function for commands
+  fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
+  activeFillColor: 'rgba(92, 194, 237, 0.75)', // the colour used to indicate the selected command
+  activePadding: 20, // additional size in pixels for the active command
+  indicatorSize: 24, // the size in pixels of the pointer to the active command
+  separatorWidth: 3, // the empty spacing in pixels between successive commands
+  spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
+  minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
+  maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
+  itemColor: 'white', // the colour of text in the command's content
+  itemTextShadowColor: 'black', // the text shadow colour of the command's content
+  zIndex: 9999 // the z-index of the ui div
 };
 
 var cxtmenuApi = cy.cxtmenu( defaults );

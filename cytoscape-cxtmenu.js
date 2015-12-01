@@ -3,16 +3,16 @@
   var defaults = {
     menuRadius: 100, // the radius of the circular menu in pixels
     selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
-    commands: [ // an array of commands to list in the menu
+    commands: [ // an array of commands to list in the menu or a function that returns the array
       /*
       { // example command
         content: 'a command name' // html/text content to be displayed in the menu
-        select: function(){ // a function to execute when the command is selected
-          console.log( this.id() ) // `this` holds the reference to the active element
+        select: function(ele){ // a function to execute when the command is selected
+          console.log( ele.id() ) // `ele` holds the reference to the active element
         }
       }
       */
-    ],
+    ], // function( ele ){ return [ /*...*/ ] }, // example function for commands
     fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
     activeFillColor: 'rgba(92, 194, 237, 0.75)', // the colour used to indicate the selected command
     activePadding: 20, // additional size in pixels for the active command
@@ -63,7 +63,7 @@
       var activeCommandI = undefined;
       var offset;
 
-      $container.append( $wrapper );
+      $container.prepend( $wrapper );
       $wrapper.append( $parent );
       $parent.append( $canvas );
 
@@ -307,14 +307,13 @@
             var ele = this;
             var isCy = this === cy;
 
-            if (options.dynamicCommands) {
-              commands = options.dynamicCommands(target);
-            }
-            else {
+            if( typeof options.commands === 'function' ){
+              commands = options.commands(target);
+            } else {
               commands = options.commands;
             }
 
-            if (!commands || commands.length == 0) return;
+            if( !commands || commands.length == 0 ){ return; }
 
             zoomEnabled = cy.userZoomingEnabled();
             cy.userZoomingEnabled( false );
@@ -384,7 +383,7 @@
             var cosTheta = (dy*dy - d*d - dx*dx)/(-2 * d * dx);
             var theta = Math.acos( cosTheta );
 
-            if( d < rs + options.spotlightPadding || d > rs + options.spotlightPadding + options.menuRadius){
+            if( d < rs + options.spotlightPadding ){
               queueDrawBg();
               return;
             }
@@ -434,7 +433,7 @@
               var select = commands[ activeCommandI ].select;
 
               if( select ){
-                select.apply( ele );
+                select.apply( ele, [ele] );
                 activeCommandI = undefined;
               }
             }
