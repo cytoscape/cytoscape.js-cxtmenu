@@ -6,6 +6,7 @@
     commands: [ // an array of commands to list in the menu or a function that returns the array
       /*
       { // example command
+        backGroundColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
         content: 'a command name' // html/text content to be displayed in the menu
         select: function(ele){ // a function to execute when the command is selected
           console.log( ele.id() ) // `ele` holds the reference to the active element
@@ -147,18 +148,36 @@
 
         c2d.clearRect(0, 0, containerSize, containerSize);
 
+        // draw background items
         c2d.fillStyle = options.fillColor;
-        c2d.beginPath();
-        c2d.arc(r + options.activePadding, r + options.activePadding, r, 0, Math.PI*2, true);
-        c2d.closePath();
-        c2d.fill();
-
-        c2d.globalCompositeOperation = 'destination-out';
-        c2d.strokeStyle = 'white';
-        c2d.lineWidth = options.separatorWidth;
         var dtheta = 2*Math.PI/(commands.length);
         var theta1 = Math.PI/2;
         var theta2 = theta1 + dtheta;
+
+        for( var x = 0; x < commands.length; x++ ){
+          var command = commands[x];
+
+          if(command.backGroundColor){
+            c2d.fillStyle = command.backGroundColor;
+          }
+          c2d.beginPath();
+          c2d.moveTo(r + options.activePadding, r + options.activePadding);
+          c2d.arc(r + options.activePadding, r + options.activePadding, r, 2*Math.PI - theta1, 2*Math.PI - theta2, true);
+          c2d.closePath();
+          c2d.fill();
+
+          theta1 += dtheta;
+          theta2 += dtheta;
+
+          c2d.fillStyle = options.fillColor;
+        }
+
+        // draw separators between items
+        c2d.globalCompositeOperation = 'destination-out';
+        c2d.strokeStyle = 'white';
+        c2d.lineWidth = options.separatorWidth;
+        theta1 = Math.PI/2;
+        theta2 = theta1 + dtheta;
 
         for( var i = 0; i < commands.length; i++ ){
           var rx1 = r * Math.cos(theta1);
