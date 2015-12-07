@@ -154,8 +154,8 @@
         var theta1 = Math.PI/2;
         var theta2 = theta1 + dtheta;
 
-        for( var x = 0; x < commands.length; x++ ){
-          var command = commands[x];
+        for( var index = 0; index < commands.length; index++ ){
+          var command = commands[index];
 
           if(command.backGroundColor){
             c2d.fillStyle = command.backGroundColor;
