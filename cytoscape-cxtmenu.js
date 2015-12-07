@@ -135,7 +135,6 @@
         theta2 += dtheta;
       }
     }
-      var hideParentOnClick, selectOnClickWrapper;
 
       function queueDrawBg( rspotlight ){
         redrawQueue.drawBg = [ rspotlight ];
@@ -162,8 +161,6 @@
         var theta2 = theta1 + dtheta;
 
         for( var i = 0; i < commands.length; i++ ){
-          var command = commands[i];
-
           var rx1 = r * Math.cos(theta1);
           var ry1 = r * Math.sin(theta1);
           c2d.beginPath();
@@ -251,8 +248,7 @@
 
       redraw(); // kick off
 
-      var ctrx, ctry, rs, theta;
-      var tapendHandler;
+      var ctrx, ctry, rs;
 
       var bindings = {
         on: function(events, selector, fn){
@@ -337,8 +333,6 @@
               rh = 1;
             }
 
-            var scrollLeft = $(window).scrollLeft();
-            var scrollTop = $(window).scrollTop();
             offset = getOffset( $container );
 
             ctrx = rp.x;
