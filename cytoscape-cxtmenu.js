@@ -87,7 +87,7 @@
     function createMenuItems() {
       $('.cxtmenu-item').remove();
       var dtheta = 2 * Math.PI / (commands.length);
-      var theta1 = commands.length % 2 !== 0 ? Math.PI / 2 : 0;
+      var theta1 = Math.PI / 2;
       var theta2 = theta1 + dtheta;
 
       for (var i = 0; i < commands.length; i++) {
@@ -158,7 +158,7 @@
         c2d.strokeStyle = 'white';
         c2d.lineWidth = options.separatorWidth;
         var dtheta = 2*Math.PI/(commands.length);
-        var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
+        var theta1 = Math.PI/2;
         var theta2 = theta1 + dtheta;
 
         for( var i = 0; i < commands.length; i++ ){
@@ -193,7 +193,7 @@
 
       function drawCommands( rx, ry, theta ){
         var dtheta = 2*Math.PI/(commands.length);
-        var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
+        var theta1 = Math.PI/2;
         var theta2 = theta1 + dtheta;
 
         theta1 += dtheta * activeCommandI;
@@ -398,7 +398,7 @@
             }
 
             var dtheta = 2*Math.PI/(commands.length);
-            var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
+            var theta1 = Math.PI/2;
             var theta2 = theta1 + dtheta;
 
             for( var i = 0; i < commands.length; i++ ){
