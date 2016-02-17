@@ -28,6 +28,7 @@ SOFTWARE.
     commands: [ // an array of commands to list in the menu or a function that returns the array
       /*
       { // example command
+        fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
         content: 'a command name' // html/text content to be displayed in the menu
         select: function(ele){ // a function to execute when the command is selected
           console.log( ele.id() ) // `ele` holds the reference to the active element
@@ -109,7 +110,7 @@ SOFTWARE.
     function createMenuItems() {
       $('.cxtmenu-item').remove();
       var dtheta = 2 * Math.PI / (commands.length);
-      var theta1 = commands.length % 2 !== 0 ? Math.PI / 2 : 0;
+      var theta1 = Math.PI / 2;
       var theta2 = theta1 + dtheta;
 
       for (var i = 0; i < commands.length; i++) {
@@ -157,7 +158,6 @@ SOFTWARE.
         theta2 += dtheta;
       }
     }
-      var hideParentOnClick, selectOnClickWrapper;
 
       function queueDrawBg( rspotlight ){
         redrawQueue.drawBg = [ rspotlight ];
@@ -170,22 +170,38 @@ SOFTWARE.
 
         c2d.clearRect(0, 0, containerSize, containerSize);
 
+        // draw background items
         c2d.fillStyle = options.fillColor;
-        c2d.beginPath();
-        c2d.arc(r + options.activePadding, r + options.activePadding, r, 0, Math.PI*2, true);
-        c2d.closePath();
-        c2d.fill();
+        var dtheta = 2*Math.PI/(commands.length);
+        var theta1 = Math.PI/2;
+        var theta2 = theta1 + dtheta;
 
+        for( var index = 0; index < commands.length; index++ ){
+          var command = commands[index];
+
+          if( command.fillColor ){
+            c2d.fillStyle = command.fillColor;
+          }
+          c2d.beginPath();
+          c2d.moveTo(r + options.activePadding, r + options.activePadding);
+          c2d.arc(r + options.activePadding, r + options.activePadding, r, 2*Math.PI - theta1, 2*Math.PI - theta2, true);
+          c2d.closePath();
+          c2d.fill();
+
+          theta1 += dtheta;
+          theta2 += dtheta;
+
+          c2d.fillStyle = options.fillColor;
+        }
+
+        // draw separators between items
         c2d.globalCompositeOperation = 'destination-out';
         c2d.strokeStyle = 'white';
         c2d.lineWidth = options.separatorWidth;
-        var dtheta = 2*Math.PI/(commands.length);
-        var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
-        var theta2 = theta1 + dtheta;
+        theta1 = Math.PI/2;
+        theta2 = theta1 + dtheta;
 
         for( var i = 0; i < commands.length; i++ ){
-          var command = commands[i];
-
           var rx1 = r * Math.cos(theta1);
           var ry1 = r * Math.sin(theta1);
           c2d.beginPath();
@@ -215,7 +231,7 @@ SOFTWARE.
 
       function drawCommands( rx, ry, theta ){
         var dtheta = 2*Math.PI/(commands.length);
-        var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
+        var theta1 = Math.PI/2;
         var theta2 = theta1 + dtheta;
 
         theta1 += dtheta * activeCommandI;
@@ -273,8 +289,7 @@ SOFTWARE.
 
       redraw(); // kick off
 
-      var ctrx, ctry, rs, theta;
-      var tapendHandler;
+      var ctrx, ctry, rs;
 
       var bindings = {
         on: function(events, selector, fn){
@@ -359,8 +374,6 @@ SOFTWARE.
               rh = 1;
             }
 
-            var scrollLeft = $(window).scrollLeft();
-            var scrollTop = $(window).scrollTop();
             offset = getOffset( $container );
 
             ctrx = rp.x;
@@ -420,7 +433,7 @@ SOFTWARE.
             }
 
             var dtheta = 2*Math.PI/(commands.length);
-            var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
+            var theta1 = Math.PI/2;
             var theta2 = theta1 + dtheta;
 
             for( var i = 0; i < commands.length; i++ ){
