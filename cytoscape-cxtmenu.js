@@ -6,7 +6,7 @@
     commands: [ // an array of commands to list in the menu or a function that returns the array
       /*
       { // example command
-        backGroundColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
+        fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
         content: 'a command name' // html/text content to be displayed in the menu
         select: function(ele){ // a function to execute when the command is selected
           console.log( ele.id() ) // `ele` holds the reference to the active element
@@ -157,8 +157,8 @@
         for( var index = 0; index < commands.length; index++ ){
           var command = commands[index];
 
-          if(command.backGroundColor){
-            c2d.fillStyle = command.backGroundColor;
+          if( command.fillColor ){
+            c2d.fillStyle = command.fillColor;
           }
           c2d.beginPath();
           c2d.moveTo(r + options.activePadding, r + options.activePadding);
