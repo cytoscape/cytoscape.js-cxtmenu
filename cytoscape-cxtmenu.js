@@ -1,18 +1,41 @@
+/*!
+Copyright (c) The Cytoscape Consortium
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the “Software”), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 ;(function( $ ){ 'use strict';
 
   var defaults = {
     menuRadius: 100, // the radius of the circular menu in pixels
     selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
-    commands: [ // an array of commands to list in the menu
+    commands: [ // an array of commands to list in the menu or a function that returns the array
       /*
       { // example command
+        fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
         content: 'a command name' // html/text content to be displayed in the menu
-        select: function(){ // a function to execute when the command is selected
-          console.log( this.id() ) // `this` holds the reference to the active element
+        select: function(ele){ // a function to execute when the command is selected
+          console.log( ele.id() ) // `ele` holds the reference to the active element
         }
       }
       */
-    ],
+    ], // function( ele ){ return [ /*...*/ ] }, // example function for commands
     fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
     activeFillColor: 'rgba(92, 194, 237, 0.75)', // the colour used to indicate the selected command
     activePadding: 20, // additional size in pixels for the active command
@@ -64,7 +87,7 @@
       var activeCommandI = undefined;
       var offset;
 
-      $container.append( $wrapper );
+      $container.prepend( $wrapper );
       $wrapper.append( $parent );
       $parent.append( $canvas );
 
@@ -88,7 +111,7 @@
     function createMenuItems() {
       $('.cxtmenu-item').remove();
       var dtheta = 2 * Math.PI / (commands.length);
-      var theta1 = commands.length % 2 !== 0 ? Math.PI / 2 : 0;
+      var theta1 = Math.PI / 2;
       var theta2 = theta1 + dtheta;
 
       for (var i = 0; i < commands.length; i++) {
@@ -136,7 +159,6 @@
         theta2 += dtheta;
       }
     }
-      var hideParentOnClick, selectOnClickWrapper;
 
       function queueDrawBg( rspotlight ){
         redrawQueue.drawBg = [ rspotlight ];
@@ -149,22 +171,38 @@
 
         c2d.clearRect(0, 0, containerSize, containerSize);
 
+        // draw background items
         c2d.fillStyle = options.fillColor;
-        c2d.beginPath();
-        c2d.arc(r + options.activePadding, r + options.activePadding, r, 0, Math.PI*2, true);
-        c2d.closePath();
-        c2d.fill();
+        var dtheta = 2*Math.PI/(commands.length);
+        var theta1 = Math.PI/2;
+        var theta2 = theta1 + dtheta;
 
+        for( var index = 0; index < commands.length; index++ ){
+          var command = commands[index];
+
+          if( command.fillColor ){
+            c2d.fillStyle = command.fillColor;
+          }
+          c2d.beginPath();
+          c2d.moveTo(r + options.activePadding, r + options.activePadding);
+          c2d.arc(r + options.activePadding, r + options.activePadding, r, 2*Math.PI - theta1, 2*Math.PI - theta2, true);
+          c2d.closePath();
+          c2d.fill();
+
+          theta1 += dtheta;
+          theta2 += dtheta;
+
+          c2d.fillStyle = options.fillColor;
+        }
+
+        // draw separators between items
         c2d.globalCompositeOperation = 'destination-out';
         c2d.strokeStyle = 'white';
         c2d.lineWidth = options.separatorWidth;
-        var dtheta = 2*Math.PI/(commands.length);
-        var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
-        var theta2 = theta1 + dtheta;
+        theta1 = Math.PI/2;
+        theta2 = theta1 + dtheta;
 
         for( var i = 0; i < commands.length; i++ ){
-          var command = commands[i];
-
           var rx1 = r * Math.cos(theta1);
           var ry1 = r * Math.sin(theta1);
           c2d.beginPath();
@@ -194,7 +232,7 @@
 
       function drawCommands( rx, ry, theta ){
         var dtheta = 2*Math.PI/(commands.length);
-        var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
+        var theta1 = Math.PI/2;
         var theta2 = theta1 + dtheta;
 
         theta1 += dtheta * activeCommandI;
@@ -252,8 +290,7 @@
 
       redraw(); // kick off
 
-      var ctrx, ctry, rs, theta;
-      var tapendHandler;
+      var ctrx, ctry, rs;
 
       var bindings = {
         on: function(events, selector, fn){
@@ -308,14 +345,13 @@
             var ele = this;
             var isCy = this === cy;
 
-            if (options.dynamicCommands) {
-              commands = options.dynamicCommands(target);
-            }
-            else {
+            if( typeof options.commands === 'function' ){
+              commands = options.commands(target);
+            } else {
               commands = options.commands;
             }
 
-            if (!commands || commands.length == 0) return;
+            if( !commands || commands.length == 0 ){ return; }
 
             zoomEnabled = cy.userZoomingEnabled();
             cy.userZoomingEnabled( false );
@@ -339,8 +375,6 @@
               rh = 1;
             }
 
-            var scrollLeft = $(window).scrollLeft();
-            var scrollTop = $(window).scrollTop();
             offset = getOffset( $container );
 
             ctrx = rp.x;
@@ -385,7 +419,7 @@
             var cosTheta = (dy*dy - d*d - dx*dx)/(-2 * d * dx);
             var theta = Math.acos( cosTheta );
 
-            if( d < rs + options.spotlightPadding || d > rs + options.spotlightPadding + options.menuRadius){
+            if( d < rs + options.spotlightPadding ){
               queueDrawBg();
               return;
             }
@@ -400,7 +434,7 @@
             }
 
             var dtheta = 2*Math.PI/(commands.length);
-            var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
+            var theta1 = Math.PI/2;
             var theta2 = theta1 + dtheta;
 
             for( var i = 0; i < commands.length; i++ ){
@@ -435,7 +469,7 @@
               var select = commands[ activeCommandI ].select;
 
               if( select ){
-                select.apply( ele );
+                select.apply( ele, [ele] );
                 activeCommandI = undefined;
               }
             }

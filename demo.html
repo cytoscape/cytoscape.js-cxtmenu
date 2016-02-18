@@ -35,7 +35,7 @@
 				opacity: 0.5;
 				font-size: 1em;
 			}
-			
+
 			/* you can set the disabled style how you like on the text/icon */
 			.cxtmenu-disabled {
 				opacity: 0.333;
@@ -94,23 +94,23 @@
 					commands: [
 						{
 							content: '<span class="fa fa-flash fa-2x"></span>',
-							select: function(){
-								console.log( this.id() );
+							select: function(ele){
+								console.log( ele.id() );
 							}
 						},
 
 						{
 							content: '<span class="fa fa-star fa-2x"></span>',
-							select: function(){
-								console.log( this.data('name') );
+							select: function(ele){
+								console.log( ele.data('name') );
 							},
 							disabled: true
 						},
 
 						{
 							content: 'Text',
-							select: function(){
-								console.log( this.position() );
+							select: function(ele){
+								console.log( ele.position() );
 							}
 						}
 					]
