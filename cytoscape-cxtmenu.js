@@ -44,6 +44,7 @@ SOFTWARE.
     spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
     minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
     maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
+    openMenuEvents: 'cxttapstart taphold', // cytoscape events that will open the menu (space separated)
     itemColor: 'white', // the colour of text in the command's content
     itemTextShadowColor: 'black', // the text shadow colour of the command's content
     zIndex: 9999 // the z-index of the ui div
@@ -339,7 +340,7 @@ SOFTWARE.
         };
 
         bindings
-          .on('cxttapstart taphold', options.selector, function(e){
+          .on(options.openMenuEvents, options.selector, function(e){
             target = this; // Remember which node the context menu is for
             var ele = this;
             var isCy = this === cy;
