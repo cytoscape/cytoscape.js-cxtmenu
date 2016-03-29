@@ -20,7 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-;(function( $ ){ 'use strict';
+;(function(){ 'use strict';
+
+  var $ = typeof jQuery === typeof undefined ? null : jQuery;
 
   var defaults = {
     menuRadius: 100, // the radius of the circular menu in pixels
@@ -537,8 +539,8 @@ SOFTWARE.
     });
   }
 
-  if( typeof cytoscape !== 'undefined' ){ // expose to global cytoscape (i.e. window.cytoscape)
+  if( typeof cytoscape !== typeof undefined && $ ){ // expose to global cytoscape (i.e. window.cytoscape)
     register( cytoscape, $ );
   }
 
-})( jQuery );
+})();
