@@ -463,8 +463,8 @@ SOFTWARE.
 
           .on('tapdrag', dragHandler)
 
-          .on('cxttapend tapend', options.selector, function(e){
-            var ele = this;
+          .on('cxttapend tapend', function(e){
+            var ele = target;
             $parent.hide();
 
             if( activeCommandI !== undefined ){
@@ -475,16 +475,6 @@ SOFTWARE.
                 activeCommandI = undefined;
               }
             }
-
-            inGesture = false;
-
-            restoreGrab();
-            restoreZoom();
-            restorePan();
-          })
-
-          .on('cxttapend tapend', function(e){
-            $parent.hide();
 
             inGesture = false;
 
