@@ -296,20 +296,26 @@ SOFTWARE.
 
       var bindings = {
         on: function(events, selector, fn){
-          data.handlers.push({
-            events: events,
-            selector: selector,
-            fn: fn
-          });
-
-          if( selector === 'core' ){
-            cy.on(events, function( e ){
+          
+          var _fn = fn;
+          if( selector === 'core'){
+            _fn = function( e ){
               if( e.cyTarget === cy ){ // only if event target is directly core
                 return fn.apply( this, [ e ] );
               }
-            });
+            };
+          }
+          
+          data.handlers.push({
+            events: events,
+            selector: selector,
+            fn: _fn
+          });
+
+          if( selector === 'core' ){
+            cy.on(events, _fn);
           } else {
-            cy.on(events, selector, fn);
+            cy.on(events, selector, _fn);
           }
 
           return this;
