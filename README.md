@@ -88,7 +88,8 @@ var defaults = {
   openMenuEvents: 'cxttapstart taphold', // cytoscape events that will open the menu (space separated)
   itemColor: 'white', // the colour of text in the command's content
   itemTextShadowColor: 'black', // the text shadow colour of the command's content
-  zIndex: 9999 // the z-index of the ui div
+  zIndex: 9999, // the z-index of the ui div
+  atMouse: false // draw menu at mouse position
 };
 
 var cxtmenuApi = cy.cxtmenu( defaults );
