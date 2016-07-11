@@ -49,7 +49,8 @@ SOFTWARE.
     openMenuEvents: 'cxttapstart taphold', // cytoscape events that will open the menu (space separated)
     itemColor: 'white', // the colour of text in the command's content
     itemTextShadowColor: 'black', // the text shadow colour of the command's content
-    zIndex: 9999 // the z-index of the ui div
+    zIndex: 9999, // the z-index of the ui div
+    atMouse: false // draw menu at mouse position
   };
 
   // registers the extension on a cytoscape lib ref
@@ -296,7 +297,7 @@ SOFTWARE.
 
       var bindings = {
         on: function(events, selector, fn){
-          
+
           var _fn = fn;
           if( selector === 'core'){
             _fn = function( e ){
@@ -305,7 +306,7 @@ SOFTWARE.
               }
             };
           }
-          
+
           data.handlers.push({
             events: events,
             selector: selector,
@@ -373,7 +374,7 @@ SOFTWARE.
             }
 
             var rp, rw, rh;
-            if( !isCy && ele.isNode() ){
+            if( !isCy && ele.isNode() && !options.atMouse ){
               rp = ele.renderedPosition();
               rw = ele.renderedWidth();
               rh = ele.renderedHeight();
