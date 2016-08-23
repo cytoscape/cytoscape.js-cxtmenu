@@ -73,7 +73,8 @@ var defaults = {
       content: 'a command name', // html/text content to be displayed in the menu
       select: function(ele){ // a function to execute when the command is selected
         console.log( ele.id() ) // `ele` holds the reference to the active element
-      }
+      },
+      disabled: false // disables the item on true
     }
     */
   ], // function( ele ){ return [ /*...*/ ] }, // example function for commands
