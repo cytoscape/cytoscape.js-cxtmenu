@@ -329,6 +329,7 @@ SOFTWARE.
         var dragHandler;
         var zoomEnabled;
         var panEnabled;
+        var gestureStartEvent;
 
         var restoreZoom = function(){
           if( zoomEnabled ){
@@ -405,6 +406,7 @@ SOFTWARE.
             activeCommandI = undefined;
 
             inGesture = true;
+            gestureStartEvent = e;
           })
 
           .on('cxtdrag tapdrag', options.selector, dragHandler = function(e){
@@ -478,7 +480,7 @@ SOFTWARE.
               var select = commands[ activeCommandI ].select;
 
               if( select ){
-                select.apply( ele, [ele] );
+                select.apply( ele, [ele, gestureStartEvent] );
                 activeCommandI = undefined;
               }
             }
