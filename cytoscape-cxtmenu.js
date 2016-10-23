@@ -355,6 +355,16 @@ SOFTWARE.
             var ele = this;
             var isCy = this === cy;
 
+            if (inGesture) {
+              $parent.hide();
+
+              inGesture = false;
+
+              restoreGrab();
+              restoreZoom();
+              restorePan();
+            }
+
             if( typeof options.commands === 'function' ){
               commands = options.commands(target);
             } else {
