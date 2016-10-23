@@ -374,7 +374,7 @@ SOFTWARE.
             }
 
             var rp, rw, rh;
-            if( !isCy && ele.isNode() && !options.atMouse ){
+            if( !isCy && ele.isNode() && !ele.isParent() && !options.atMouse ){
               rp = ele.renderedPosition();
               rw = ele.renderedWidth();
               rh = ele.renderedHeight();
