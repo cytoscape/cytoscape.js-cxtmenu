@@ -329,6 +329,7 @@ SOFTWARE.
         var dragHandler;
         var zoomEnabled;
         var panEnabled;
+        var gestureStartEvent;
 
         var restoreZoom = function(){
           if( zoomEnabled ){
@@ -354,6 +355,16 @@ SOFTWARE.
             var ele = this;
             var isCy = this === cy;
 
+            if (inGesture) {
+              $parent.hide();
+
+              inGesture = false;
+
+              restoreGrab();
+              restoreZoom();
+              restorePan();
+            }
+
             if( typeof options.commands === 'function' ){
               commands = options.commands(target);
             } else {
@@ -374,7 +385,7 @@ SOFTWARE.
             }
 
             var rp, rw, rh;
-            if( !isCy && ele.isNode() && !options.atMouse ){
+            if( !isCy && ele.isNode() && !ele.isParent() && !options.atMouse ){
               rp = ele.renderedPosition();
               rw = ele.renderedWidth();
               rh = ele.renderedHeight();
@@ -405,6 +416,7 @@ SOFTWARE.
             activeCommandI = undefined;
 
             inGesture = true;
+            gestureStartEvent = e;
           })
 
           .on('cxtdrag tapdrag', options.selector, dragHandler = function(e){
@@ -478,7 +490,7 @@ SOFTWARE.
               var select = commands[ activeCommandI ].select;
 
               if( select ){
-                select.apply( ele, [ele] );
+                select.apply( ele, [ele, gestureStartEvent] );
                 activeCommandI = undefined;
               }
             }
