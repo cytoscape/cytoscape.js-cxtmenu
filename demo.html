@@ -8,7 +8,6 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 
 		<link href="font-awesome-4.0.3/css/font-awesome.css" rel="stylesheet" type="text/css" />
-		<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 		<script src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js"></script>
 
 		<!-- for testing with local version of cytoscape.js -->
@@ -43,7 +42,7 @@
 		</style>
 
 		<script>
-			$(function(){
+			window.addEventListener('DOMContentLoaded', function(){
 
 				var cy = window.cy = cytoscape({
 					container: document.getElementById('cy'),
