@@ -22,8 +22,6 @@ SOFTWARE.
 
 ;(function(){ 'use strict';
 
-  var $ = typeof jQuery === typeof undefined ? null : jQuery;
-
   var defaults = {
     menuRadius: 100, // the radius of the circular menu in pixels
     selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
@@ -53,66 +51,123 @@ SOFTWARE.
     atMouse: false // draw menu at mouse position
   };
 
+  // Object.assign Polyfill for IE
+  if (typeof Object.assign != 'function') {
+    (function () {
+      Object.assign = function (target) {
+        'use strict';
+        // We must check against these specific cases.
+        if (target === undefined || target === null) {
+          throw new TypeError('Cannot convert undefined or null to object');
+        }
+
+        var output = Object(target);
+        for (var index = 1; index < arguments.length; index++) {
+          var source = arguments[index];
+          if (source !== undefined && source !== null) {
+            for (var nextKey in source) {
+              if (source.hasOwnProperty(nextKey)) {
+                output[nextKey] = source[nextKey];
+              }
+            }
+          }
+        }
+        return output;
+      };
+    })();
+  }
+
+  var removeEles = function(query, ancestor) {
+    ancestor = ancestor || document;
+
+    for (var el of [].slice.call(ancestor.querySelectorAll(query))) {
+      el.remove();
+    }
+  };
+
+  var setStyles = function(el, style) {
+    for (var key of Object.keys(style)) {
+      el.style[key] = style[key];
+    }
+  };
+
+  var createElement = function(options){
+    options = options || {};
+
+    var el = document.createElement(options.tag || 'div');
+
+    el.className = options.class || '';
+
+    if (options.style) {
+      setStyles(el, options.style);
+    }
+
+    return el;
+  };
+
   // registers the extension on a cytoscape lib ref
-  var register = function( cytoscape, $ ){
+  var register = function(cytoscape){
     if( !cytoscape ){ return; } // can't register if cytoscape unspecified
 
     cytoscape('core', 'cxtmenu', function(params){
-      var options = $.extend(true, {}, defaults, params);
+      var options = Object.assign({}, defaults, params);
       var fn = params;
       var cy = this;
-      var $container = $( cy.container() );
+      var container = cy.container();
       var target;
 
-      function getOffset( $ele ){
-        var offset = $ele.offset();
+      function getOffset( el ){
+        var offset = el.getBoundingClientRect();
 
-        offset.left += parseFloat( $ele.css('padding-left') );
-        offset.left += parseFloat( $ele.css('border-left-width') );
-
-        offset.top += parseFloat( $ele.css('padding-top') );
-        offset.top += parseFloat( $ele.css('border-top-width') );
-
-        return offset;
+        return {
+          left: offset.left + document.body.scrollLeft +
+                parseFloat(getComputedStyle(document.body)['padding-left']) +
+                parseFloat(getComputedStyle(document.body)['border-left-width']),
+          top: offset.top + document.body.scrollTop +
+               parseFloat(getComputedStyle(document.body)['padding-top']) +
+               parseFloat(getComputedStyle(document.body)['border-top-width'])
+        };
       }
 
       var data = {
         options: options,
         handlers: []
       };
-      var $wrapper = $('<div class="cxtmenu"></div>'); data.$container = $wrapper;
-      var $parent = $('<div></div>');
-      var $canvas = $('<canvas></canvas>');
+      var wrapper = createElement({class: 'cxtmenu'});
+      data.container = wrapper;
+      var parent = createElement();
+      var canvas = createElement({tag: 'canvas'});
       var commands = [];
-      var c2d = $canvas[0].getContext('2d');
+      var c2d = canvas.getContext('2d');
       var r = options.menuRadius;
       var containerSize = (r + options.activePadding)*2;
       var activeCommandI = undefined;
       var offset;
 
-      $container.prepend( $wrapper );
-      $wrapper.append( $parent );
-      $parent.append( $canvas );
+      container.insertBefore(wrapper, container.firstChild);
+      wrapper.appendChild(parent);
+      parent.appendChild(canvas);
 
-      $wrapper.css({
+      setStyles(wrapper, {
         position: 'absolute',
         zIndex: options.zIndex
       });
 
-      $parent.css({
+      setStyles(parent, {
+        display: 'none',
         width: containerSize + 'px',
         height: containerSize + 'px',
         position: 'absolute',
         zIndex: 1,
         marginLeft: - options.activePadding + 'px',
         marginTop: - options.activePadding + 'px'
-      }).hide();
+      });
 
-      $canvas[0].width = containerSize;
-      $canvas[0].height = containerSize;
+      canvas.width = containerSize;
+      canvas.height = containerSize;
 
     function createMenuItems() {
-      $('.cxtmenu-item').remove();
+      removeEles('.cxtmenu-item', parent);
       var dtheta = 2 * Math.PI / (commands.length);
       var theta1 = Math.PI / 2;
       var theta2 = theta1 + dtheta;
@@ -124,8 +179,8 @@ SOFTWARE.
         var rx1 = 0.66 * r * Math.cos(midtheta);
         var ry1 = 0.66 * r * Math.sin(midtheta);
 
-        var $item = $('<div class="cxtmenu-item"></div>');
-        $item.css({
+        var item = createElement({class: 'cxtmenu-item'});
+        setStyles(item, {
           color: options.itemColor,
           cursor: 'default',
           display: 'table',
@@ -135,28 +190,28 @@ SOFTWARE.
           'text-shadow': '-1px -1px ' + options.itemTextShadowColor + ', 1px -1px ' + options.itemTextShadowColor + ', -1px 1px ' + options.itemTextShadowColor + ', 1px 1px ' + options.itemTextShadowColor,
           left: '50%',
           top: '50%',
-          'min-height': r * 0.66,
-          width: r * 0.66,
-          height: r * 0.66,
-          marginLeft: rx1 - r * 0.33,
-          marginTop: -ry1 - r * 0.33
+          'min-height': (r * 0.66) + 'px',
+          width: (r * 0.66) + 'px',
+          height: (r * 0.66) + 'px',
+          marginLeft: (rx1 - r * 0.33) + 'px',
+          marginTop: (-ry1 - r * 0.33) + 'px'
         });
 
-        var $content = $('<div class="cxtmenu-content">' + command.content + '</div>');
-        $content.css({
-          'width': r * 0.66,
-          'height': r * 0.66,
+        var content = createElement({class: 'cxtmenu-content'});
+        content.innerHTML = command.content;
+        setStyles(content, {
+          'width': (r * 0.66) + 'px',
+          'height': (r * 0.66) + 'px',
           'vertical-align': 'middle',
           'display': 'table-cell'
         });
 
         if (command.disabled) {
-          $content.addClass('cxtmenu-disabled');
+          content.classList.add('cxtmenu-disabled');
         }
 
-        $parent.append($item);
-        $item.append($content);
-
+        parent.appendChild(item);
+        item.appendChild(content);
 
         theta1 += dtheta;
         theta2 += dtheta;
@@ -356,7 +411,7 @@ SOFTWARE.
             var isCy = this === cy;
 
             if (inGesture) {
-              $parent.hide();
+              parent.style.display = 'none';
 
               inGesture = false;
 
@@ -395,16 +450,17 @@ SOFTWARE.
               rh = 1;
             }
 
-            offset = getOffset( $container );
+            offset = getOffset(container);
 
             ctrx = rp.x;
             ctry = rp.y;
 
             createMenuItems();
 
-            $parent.show().css({
-              'left': rp.x - r + 'px',
-              'top': rp.y - r + 'px'
+            setStyles(parent, {
+              display: 'block',
+              left: (rp.x - r) + 'px',
+              top: (rp.y - r) + 'px'
             });
 
             rs = Math.max(rw, rh)/2;
@@ -484,7 +540,8 @@ SOFTWARE.
 
           .on('cxttapend tapend', options.selector, function(e){
             var ele = this;
-            $parent.hide();
+
+            parent.style.display = 'none';
 
             if( activeCommandI !== undefined ){
               var select = commands[ activeCommandI ].select;
@@ -503,7 +560,7 @@ SOFTWARE.
           })
 
           .on('cxttapend tapend', function(e){
-            $parent.hide();
+            parent.style.display = 'none';
 
             inGesture = false;
 
@@ -533,7 +590,7 @@ SOFTWARE.
 
         removeEventListeners();
 
-        $wrapper.remove();
+        wrapper.remove();
       }
 
       addEventListeners();
@@ -558,8 +615,8 @@ SOFTWARE.
     });
   }
 
-  if( typeof cytoscape !== typeof undefined && $ ){ // expose to global cytoscape (i.e. window.cytoscape)
-    register( cytoscape, $ );
+  if( typeof cytoscape !== typeof undefined ){ // expose to global cytoscape (i.e. window.cytoscape)
+    register(cytoscape);
   }
 
 })();
