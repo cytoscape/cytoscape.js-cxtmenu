@@ -13,7 +13,6 @@ This plugin creates a widget that lets the user operate circular context menus o
 ## Dependencies
 
  * Cytoscape.js >= 2.2
- * jQuery >= 1.4
 
 
 ## Usage instructions
@@ -28,20 +27,17 @@ Download the library:
 CommonJS:
 ```js
 var cytoscape = require('cytoscape');
-var jquery = require('jquery');
 var cxtmenu = require('cytoscape-cxtmenu');
 
-cxtmenu( cytoscape, jquery ); // register extension
+cxtmenu( cytoscape ); // register extension
 ```
 
 AMD:
 ```js
-require(['cytoscape', 'cytoscape-cxtmenu', 'jquery'], function( cytoscape, cxtmenu, jquery ){
-  cxtmenu( cytoscape, jquery ); // register extension
+require(['cytoscape', 'cytoscape-cxtmenu'], function( cytoscape, cxtmenu ){
+  cxtmenu( cytoscape ); // register extension
 });
 ```
-
-Note that `jquery` must point to a jQuery object if any sort of `require()` is used.
 
 Plain HTML/JS has the extension registered for you automatically, because no `require()` is needed.
 
