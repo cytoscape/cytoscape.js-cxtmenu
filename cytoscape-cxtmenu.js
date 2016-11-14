@@ -78,16 +78,20 @@ SOFTWARE.
   }
 
   var removeEles = function(query, ancestor) {
+    var els = [].slice.call(ancestor.querySelectorAll(query));
+
     ancestor = ancestor || document;
 
-    for (var el of [].slice.call(ancestor.querySelectorAll(query))) {
-      el.remove();
+    for (var i = 0, l = els.length; i < l; i++) {
+      els[i].remove();
     }
   };
 
   var setStyles = function(el, style) {
-    for (var key of Object.keys(style)) {
-      el.style[key] = style[key];
+    var props = Object.keys(style);
+
+    for (var i = 0, l = props.length; i < l; i++) {
+      el.style[props[i]] = style[i];
     }
   };
 
