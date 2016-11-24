@@ -91,7 +91,7 @@ SOFTWARE.
     var props = Object.keys(style);
 
     for (var i = 0, l = props.length; i < l; i++) {
-      el.style[props[i]] = style[i];
+      el.style[props[i]] = style[props[i]];
     }
   };
 
