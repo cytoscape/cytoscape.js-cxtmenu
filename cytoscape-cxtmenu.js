@@ -91,7 +91,7 @@ SOFTWARE.
     var props = Object.keys(style);
 
     for (var i = 0, l = props.length; i < l; i++) {
-      el.style[props[i]] = style[i];
+      el.style[props[i]] = style[props[i]];
     }
   };
 
@@ -114,6 +114,7 @@ SOFTWARE.
     if( !cytoscape ){ return; } // can't register if cytoscape unspecified
 
     cytoscape('core', 'cxtmenu', function(params){
+
       var options = Object.assign({}, defaults, params);
       var fn = params;
       var cy = this;
@@ -145,13 +146,16 @@ SOFTWARE.
       var c2d = canvas.getContext('2d');
       var r = options.menuRadius;
       var containerSize = (r + options.activePadding)*2;
-      var activeCommandI = undefined;
-      var offset;
-
+      var activeCommandI = [];
+      var offset,
+          canvasSize = containerSize,
+      activePadding =  options.activePadding,
+      hasSubCommand = !!options.commands.find(function(menu){return !!menu.subCommands}),
+          offsetSize = hasSubCommand ? 2 * r : r;
+      hasSubCommand && (containerSize = canvasSize = canvasSize + r * 2);
       container.insertBefore(wrapper, container.firstChild);
       wrapper.appendChild(parent);
       parent.appendChild(canvas);
-
       setStyles(wrapper, {
         position: 'absolute',
         zIndex: options.zIndex
@@ -163,12 +167,12 @@ SOFTWARE.
         height: containerSize + 'px',
         position: 'absolute',
         zIndex: 1,
-        marginLeft: - options.activePadding + 'px',
-        marginTop: - options.activePadding + 'px'
+        marginLeft: - activePadding + 'px',
+        marginTop: - activePadding + 'px'
       });
 
-      canvas.width = containerSize;
-      canvas.height = containerSize;
+      canvas.width = canvasSize;
+      canvas.height = canvasSize;
 
     function createMenuItems() {
       removeEles('.cxtmenu-item', parent);
@@ -214,6 +218,60 @@ SOFTWARE.
           content.classList.add('cxtmenu-disabled');
         }
 
+        // Render sub commands
+        (function(subCommands,thetaRange,thetaStart){
+          if(!subCommands || !subCommands.length) return;
+          var
+              id = 0,
+              sl = subCommands.length,
+              dTheta = thetaRange/sl,
+              theta1 = thetaStart,
+              theta2 = theta1 + dTheta,
+              midTheta,subCommand,rx_1,ry_1,$subItem,$subContent;
+          for(;id < sl; id++){
+            subCommand = subCommands[id];
+            midTheta = (theta1 + theta2)/2;
+            rx_1 = 1.66 * r * Math.cos( midTheta );
+            ry_1 = 1.66 * r * Math.sin( midTheta );
+            $subItem = createElement({class: 'cxtmenu-sub-item'});
+            setStyles($subItem,{
+              color: options.itemColor,
+              cursor: 'default',
+              display: 'table',
+              'text-align': 'center',
+              //background: 'red',
+              position: 'absolute',
+              'text-shadow': '-1px -1px ' + options.itemTextShadowColor + ', 1px -1px ' + options.itemTextShadowColor + ', -1px 1px ' + options.itemTextShadowColor + ', 1px 1px ' + options.itemTextShadowColor,
+              /*  left: '50%',
+               top: '50%',*/
+              'min-height': r * 0.66,
+              width: r * 0.66,
+              height: r * 0.66,
+              marginLeft: ((rx_1 - r * 0.33) - ( rx1 - r * 0.33)) + "px",
+              marginTop: ((-ry_1 -r * 0.33) - ( -ry1 -r * 0.33)) + "px"
+            });
+            $subContent = createElement({class: 'cxtmenu-sub-content'});
+            //$subContent = $('<div class="cxtmenu-sub-content">' + subCommand.content + '</div>');
+            setStyles($subContent,{
+              'transform':'transform: rotate('+ (Math.PI/2 - midTheta) * (180/Math.PI) +'deg)',
+              'width': r * 0.66,
+              'height': r * 0.66,
+              'vertical-align': 'middle',
+              'display': 'table-cell'
+            });
+            $subContent.innerHTML = subCommand.content;
+
+            if( subCommand.disabled ){
+              $subContent.classList.add('cxtmenu-disabled');
+            }
+            $subItem.appendChild( $subContent );
+            item.appendChild( $subItem);
+            theta1 += dTheta;
+            theta2 += dTheta;
+          }
+
+        })(command.subCommands,dtheta,theta1);
+
         parent.appendChild(item);
         item.appendChild(content);
 
@@ -231,90 +289,164 @@ SOFTWARE.
 
         c2d.globalCompositeOperation = 'source-over';
 
-        c2d.clearRect(0, 0, containerSize, containerSize);
+        c2d.clearRect(0, 0, canvasSize, canvasSize);
 
-        // draw background items
         c2d.fillStyle = options.fillColor;
-        var dtheta = 2*Math.PI/(commands.length);
-        var theta1 = Math.PI/2;
-        var theta2 = theta1 + dtheta;
+        c2d.beginPath();
+        c2d.arc(offsetSize + activePadding, offsetSize + activePadding, r *  1 , 0, Math.PI*2, true);
+        c2d.closePath();
+        c2d.fill();
 
-        for( var index = 0; index < commands.length; index++ ){
-          var command = commands[index];
-
-          if( command.fillColor ){
-            c2d.fillStyle = command.fillColor;
-          }
-          c2d.beginPath();
-          c2d.moveTo(r + options.activePadding, r + options.activePadding);
-          c2d.arc(r + options.activePadding, r + options.activePadding, r, 2*Math.PI - theta1, 2*Math.PI - theta2, true);
-          c2d.closePath();
-          c2d.fill();
-
-          theta1 += dtheta;
-          theta2 += dtheta;
-
-          c2d.fillStyle = options.fillColor;
-        }
-
-        // draw separators between items
         c2d.globalCompositeOperation = 'destination-out';
         c2d.strokeStyle = 'white';
         c2d.lineWidth = options.separatorWidth;
-        theta1 = Math.PI/2;
-        theta2 = theta1 + dtheta;
+        var commands = options.commands;
+        var dtheta = 2*Math.PI/(commands.length);
+        var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
+        var theta2 = theta1 + dtheta;
 
         for( var i = 0; i < commands.length; i++ ){
+          var command = commands[i];
+
           var rx1 = r * Math.cos(theta1);
           var ry1 = r * Math.sin(theta1);
           c2d.beginPath();
-          c2d.moveTo(r + options.activePadding, r + options.activePadding);
-          c2d.lineTo(r + options.activePadding + rx1, r + options.activePadding - ry1);
+          c2d.moveTo(offsetSize + activePadding, offsetSize + activePadding);
+          c2d.lineTo(offsetSize + activePadding + rx1, offsetSize + activePadding - ry1);
           c2d.closePath();
           c2d.stroke();
+
+          // Render sub commands
+          (function(subCommands,thetaRange,thetaStart,thetaEnd){
+            if(!subCommands || !subCommands.length) return;
+            var
+                id = 0,
+                sl = subCommands.length,
+                dTheta = thetaRange/sl,
+                theta1 = thetaStart,
+                theta2 = theta1 + dTheta,
+                rx1,ry1,rx2,ry2;
+            c2d.globalCompositeOperation="source-over";
+
+
+            for(;id < sl; id++){
+              rx1 = r * Math.cos( theta1 );
+              ry1 = r * Math.sin( theta1 );
+              rx2 = (r * 2) * Math.cos( theta1 );
+              ry2 = (r * 2) * Math.sin( theta1 );
+
+
+              //二级菜单背景
+              c2d.beginPath();
+              //c2d.strokeStyle = 'white';
+              c2d.arc(offsetSize + activePadding, offsetSize + activePadding, r, -theta1, -theta2,true);
+              c2d.arc(offsetSize + activePadding, offsetSize + activePadding, r *  2 , -theta2, -theta1,false);
+              c2d.closePath();
+              c2d.fill();
+
+              c2d.beginPath();
+              c2d.strokeStyle = "white";
+              c2d.moveTo(offsetSize + activePadding + rx1,offsetSize + activePadding - ry1);
+              //c2d.arc(offsetSize + activePadding + rx1,offsetSize + activePadding - ry1, 20 , 0, Math.PI * 2, false);
+              c2d.lineTo(offsetSize + activePadding + rx2, offsetSize + activePadding - ry2);
+
+              c2d.stroke();
+              //c2d.closePath();
+
+              theta1 += dTheta;
+              theta2 += dTheta;
+            }
+
+          })(command.subCommands,dtheta,theta1,theta2);
 
           theta1 += dtheta;
           theta2 += dtheta;
         }
-
 
         c2d.fillStyle = 'white';
         c2d.globalCompositeOperation = 'destination-out';
         c2d.beginPath();
-        c2d.arc(r + options.activePadding, r + options.activePadding, rspotlight + options.spotlightPadding, 0, Math.PI*2, true);
+        c2d.arc(offsetSize + activePadding, offsetSize + activePadding, rspotlight + options.spotlightPadding, 0, Math.PI*2, true);
         c2d.closePath();
         c2d.fill();
 
+        c2d.beginPath();
+        c2d.arc(offsetSize + activePadding, offsetSize + activePadding, r *  1 , 0, Math.PI*2, true);
+        c2d.closePath();
+        c2d.stroke();
         c2d.globalCompositeOperation = 'source-over';
       }
 
-      function queueDrawCommands( rx, ry, theta ){
-        redrawQueue.drawCommands = [ rx, ry, theta ];
+      function queueDrawCommands( rx, ry, theta ,dx,dy){
+        redrawQueue.drawCommands = [ rx, ry, theta,dx,dy ];
       }
 
-      function drawCommands( rx, ry, theta ){
+      function drawCommands( rx, ry, theta, dx,dy){
         var dtheta = 2*Math.PI/(commands.length);
-        var theta1 = Math.PI/2;
+/*        var theta1 = Math.PI/2;
+        var theta2 = theta1 + dtheta;*/
+        var theta1 = commands.length % 2 !== 0 ? Math.PI/2 : 0;
         var theta2 = theta1 + dtheta;
-
-        theta1 += dtheta * activeCommandI;
-        theta2 += dtheta * activeCommandI;
+        var mouseR = Math.sqrt( dx*dx + dy*dy );
+        var activeId = activeCommandI[0];
+        theta1 += dtheta * activeId;
+        theta2 += dtheta * activeId;
 
         c2d.fillStyle = options.activeFillColor;
         c2d.strokeStyle = 'black';
         c2d.lineWidth = 1;
         c2d.beginPath();
-        c2d.moveTo(r + options.activePadding, r + options.activePadding);
-        c2d.arc(r + options.activePadding, r + options.activePadding, r + options.activePadding, 2*Math.PI - theta1, 2*Math.PI - theta2, true);
+        c2d.moveTo(offsetSize + activePadding, offsetSize + activePadding);
+        c2d.arc(offsetSize + activePadding, offsetSize + activePadding, r, 2*Math.PI - theta1, 2*Math.PI - theta2, true);
         c2d.closePath();
         c2d.fill();
+        activeId !== undefined && (function(subCommands,thetaRange,thetaStart,thetaEnd){
+          if(!subCommands || !subCommands.length) return;
+          var
+              id = 0,
+              sl = subCommands.length,
+              dTheta = thetaRange/sl,
+              theta1 = thetaStart,
+              theta2 = theta1 + dTheta,
+              rx1,ry1,rx2,ry2,parseTheta;
 
-        c2d.fillStyle = 'white';
+          parseTheta =  theta <  Math.PI ?theta + Math.PI*2:theta;
+
+          for(;id < sl; id++){
+            rx1 = r * Math.cos( theta1 );
+            ry1 = r * Math.sin( theta1 );
+            rx2 = (r * 2) * Math.cos( theta1 );
+            ry2 = (r * 2) * Math.sin( theta1 );
+
+            if(
+                (
+                    (theta2 <  Math.PI * 2) && ( theta1 < theta && theta < theta2)
+                    ||(theta2 >  Math.PI * 2) && ( theta1 < parseTheta  && parseTheta < theta2)
+                )
+                &&( r < mouseR && mouseR < 2 * r)
+            ){
+              activeCommandI[1] = id;
+
+              //level2's background
+              c2d.beginPath();
+              //c2d.strokeStyle = 'white';
+              c2d.arc(offsetSize + activePadding, offsetSize + activePadding, r, -theta1, -theta2,true);
+              c2d.arc(offsetSize + activePadding, offsetSize + activePadding, r *  2 , -theta2, -theta1,false);
+              c2d.closePath();
+              c2d.fill();
+            }
+
+            theta1 += dTheta;
+            theta2 += dTheta;
+          }
+
+        })(commands[activeId].subCommands,dtheta,theta1,theta2);
+        c2d.fillStyle = 'black';
         c2d.globalCompositeOperation = 'destination-out';
 
         // clear the indicator
         c2d.beginPath();
-        c2d.translate( r + options.activePadding + rx/r*(rs + options.spotlightPadding - options.indicatorSize/4), r + options.activePadding + ry/r*(rs + options.spotlightPadding - options.indicatorSize/4) );
+        c2d.translate( offsetSize + activePadding + rx/r*(rs + options.spotlightPadding - options.indicatorSize/4), offsetSize + activePadding + ry/r*(rs + options.spotlightPadding - options.indicatorSize/4) );
         c2d.rotate( Math.PI/4 - theta );
         c2d.fillRect(-options.indicatorSize/2, -options.indicatorSize/2, options.indicatorSize, options.indicatorSize);
         c2d.closePath();
@@ -324,7 +456,7 @@ SOFTWARE.
 
         // clear the spotlight
         c2d.beginPath();
-        c2d.arc(r + options.activePadding, r + options.activePadding, rs + options.spotlightPadding, 0, Math.PI*2, true);
+        c2d.arc(offsetSize + options.activePadding, offsetSize + options.activePadding, rs + options.spotlightPadding, 0, Math.PI*2, true);
         c2d.closePath();
         c2d.fill();
 
@@ -410,6 +542,7 @@ SOFTWARE.
 
         bindings
           .on(options.openMenuEvents, options.selector, function(e){
+            console.log(options.openMenuEvents);
             target = this; // Remember which node the context menu is for
             var ele = this;
             var isCy = this === cy;
@@ -463,8 +596,8 @@ SOFTWARE.
 
             setStyles(parent, {
               display: 'block',
-              left: (rp.x - r) + 'px',
-              top: (rp.y - r) + 'px'
+              left: (rp.x - offsetSize) + 'px',
+              top: (rp.y - offsetSize) + 'px'
             });
 
             rs = Math.max(rw, rh)/2;
@@ -473,14 +606,13 @@ SOFTWARE.
 
             queueDrawBg();
 
-            activeCommandI = undefined;
+            activeCommandI = [];
 
             inGesture = true;
             gestureStartEvent = e;
           })
 
           .on('cxtdrag tapdrag', options.selector, dragHandler = function(e){
-
             if( !inGesture ){ return; }
 
             var origE = e.originalEvent;
@@ -489,7 +621,7 @@ SOFTWARE.
             var pageX = isTouch ? origE.touches[0].pageX : origE.pageX;
             var pageY = isTouch ? origE.touches[0].pageY : origE.pageY;
 
-            activeCommandI = undefined;
+            activeCommandI = [];
 
             var dx = pageX - offset.left - ctrx;
             var dy = pageY - offset.top - ctry;
@@ -522,37 +654,36 @@ SOFTWARE.
               var command = commands[i];
 
               var inThisCommand = theta1 <= theta && theta <= theta2
-                || theta1 <= theta + 2*Math.PI && theta + 2*Math.PI <= theta2;
+                  || theta1 <= theta + 2*Math.PI && theta + 2*Math.PI <= theta2;
 
               if( command.disabled ){
                 inThisCommand = false;
               }
 
               if( inThisCommand ){
-                activeCommandI = i;
+                activeCommandI = [i];
                 break;
               }
 
               theta1 += dtheta;
               theta2 += dtheta;
             }
-
-            queueDrawCommands( rx, ry, theta );
+            queueDrawCommands( rx, ry, theta ,dx,dy);
           })
 
           .on('tapdrag', dragHandler)
 
           .on('cxttapend tapend', options.selector, function(e){
-            var ele = this;
-
+            console.log("cxttapend tapend");
+            var ele = this,commands = options.commands,subCommands,select;
             parent.style.display = 'none';
-
-            if( activeCommandI !== undefined ){
-              var select = commands[ activeCommandI ].select;
+            if( activeCommandI[0] !== undefined ){
+              subCommands = commands[activeCommandI[0]]["subCommands"];
+              select = activeCommandI[1] !== undefined && subCommands ? subCommands[activeCommandI[1]].select: commands[ activeCommandI[0]].select;
 
               if( select ){
-                select.apply( ele, [ele, gestureStartEvent] );
-                activeCommandI = undefined;
+                select.apply( ele,[ele, gestureStartEvent] );
+                activeCommandI = [];
               }
             }
 
@@ -564,6 +695,7 @@ SOFTWARE.
           })
 
           .on('cxttapend tapend', function(e){
+            console.log("cxttapend tapend2");
             parent.style.display = 'none';
 
             inGesture = false;
