@@ -389,6 +389,7 @@ SOFTWARE.
         var zoomEnabled;
         var panEnabled;
         var gestureStartEvent;
+        var boxSelectionEnabled;
 
         var restoreZoom = function(){
           if( zoomEnabled ){
@@ -408,6 +409,19 @@ SOFTWARE.
           }
         };
 
+        var restoreBoxSeln = function(){
+          if( boxSelectionEnabled ){
+            cy.boxSelectionEnabled( true );
+          }
+        };
+
+        var restoreGestures = function(){
+          restoreGrab();
+          restoreZoom();
+          restorePan();
+          restoreBoxSeln();
+        };
+
         bindings
           .on(options.openMenuEvents, options.selector, function(e){
             target = this; // Remember which node the context menu is for
@@ -419,9 +433,7 @@ SOFTWARE.
 
               inGesture = false;
 
-              restoreGrab();
-              restoreZoom();
-              restorePan();
+              restoreGestures();
             }
 
             if( typeof options.commands === 'function' ){
@@ -437,6 +449,9 @@ SOFTWARE.
 
             panEnabled = cy.userPanningEnabled();
             cy.userPanningEnabled( false );
+
+            boxSelectionEnabled = cy.boxSelectionEnabled();
+            cy.boxSelectionEnabled( false );
 
             grabbable = target.grabbable &&  target.grabbable();
             if( grabbable ){
@@ -566,9 +581,7 @@ SOFTWARE.
             }
             parent.style.display = 'none';
             inGesture = false;
-            restoreGrab();
-            restoreZoom();
-            restorePan();
+            restoreGestures();
           })
         ;
       }
