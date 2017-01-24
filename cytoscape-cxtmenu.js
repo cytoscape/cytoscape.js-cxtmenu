@@ -554,6 +554,16 @@ SOFTWARE.
           })
 
           .on('cxttapend tapend', function(e){
+            if (options.openMenuEvents === 'tap') {
+              var ele = this
+              if (activeCommandI !== undefined) {
+                var select = commands[ activeCommandI ].select
+                if (select) {
+                  select.apply(ele, [ele, gestureStartEvent])
+                  activeCommandI = undefined
+                }
+              }
+            }
             parent.style.display = 'none';
             inGesture = false;
             restoreGrab();
