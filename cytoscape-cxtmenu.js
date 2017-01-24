@@ -542,32 +542,20 @@ SOFTWARE.
 
           .on('tapdrag', dragHandler)
 
-          .on('cxttapend tapend', options.selector, function(e){
+          .on('cxttap tap', options.selector, function(e){
             var ele = this;
-
-            parent.style.display = 'none';
-
             if( activeCommandI !== undefined ){
               var select = commands[ activeCommandI ].select;
-
               if( select ){
                 select.apply( ele, [ele, gestureStartEvent] );
                 activeCommandI = undefined;
               }
             }
-
-            inGesture = false;
-
-            restoreGrab();
-            restoreZoom();
-            restorePan();
           })
 
           .on('cxttapend tapend', function(e){
             parent.style.display = 'none';
-
             inGesture = false;
-
             restoreGrab();
             restoreZoom();
             restorePan();
