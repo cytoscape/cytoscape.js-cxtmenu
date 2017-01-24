@@ -55,7 +55,6 @@ SOFTWARE.
   if (typeof Object.assign != 'function') {
     (function () {
       Object.assign = function (target) {
-        'use strict';
         // We must check against these specific cases.
         if (target === undefined || target === null) {
           throw new TypeError('Cannot convert undefined or null to object');
@@ -115,7 +114,6 @@ SOFTWARE.
 
     cytoscape('core', 'cxtmenu', function(params){
       var options = Object.assign({}, defaults, params);
-      var fn = params;
       var cy = this;
       var container = cy.container();
       var target;
@@ -145,7 +143,7 @@ SOFTWARE.
       var c2d = canvas.getContext('2d');
       var r = options.menuRadius;
       var containerSize = (r + options.activePadding)*2;
-      var activeCommandI = undefined;
+      var activeCommandI;
       var offset;
 
       container.insertBefore(wrapper, container.firstChild);
@@ -442,7 +440,7 @@ SOFTWARE.
               commands = options.commands;
             }
 
-            if( !commands || commands.length == 0 ){ return; }
+            if( !commands || commands.length === 0 ){ return; }
 
             zoomEnabled = cy.userZoomingEnabled();
             cy.userZoomingEnabled( false );
@@ -570,12 +568,12 @@ SOFTWARE.
 
           .on('cxttapend tapend', function(e){
             if (options.openMenuEvents === 'tap') {
-              var ele = this
+              var ele = this;
               if (activeCommandI !== undefined) {
-                var select = commands[ activeCommandI ].select
+                var select = commands[ activeCommandI ].select;
                 if (select) {
-                  select.apply(ele, [ele, gestureStartEvent])
-                  activeCommandI = undefined
+                  select.apply(ele, [ele, gestureStartEvent]);
+                  activeCommandI = undefined;
                 }
               }
             }
