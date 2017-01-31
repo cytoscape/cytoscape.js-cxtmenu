@@ -555,27 +555,17 @@ SOFTWARE.
 
           .on('tapdrag', dragHandler)
 
-          .on('cxttapend tapend', options.selector, function(e){
-            var ele = this;
-
+          .on('cxttapend tapend', function(e){
             parent.style.display = 'none';
 
             if( activeCommandI !== undefined ){
               var select = commands[ activeCommandI ].select;
 
               if( select ){
-                select.apply( ele, [ele, gestureStartEvent] );
+                select.apply( target, [target, gestureStartEvent] );
                 activeCommandI = undefined;
               }
             }
-
-            inGesture = false;
-
-            restoreGestures();
-          })
-
-          .on('cxttapend tapend', function(e){
-            parent.style.display = 'none';
 
             inGesture = false;
 
