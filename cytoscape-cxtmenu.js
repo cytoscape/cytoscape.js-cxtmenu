@@ -388,6 +388,7 @@ SOFTWARE.
         var dragHandler;
         var zoomEnabled;
         var panEnabled;
+        var boxEnabled;
         var gestureStartEvent;
 
         var restoreZoom = function(){
@@ -408,6 +409,19 @@ SOFTWARE.
           }
         };
 
+        var restoreBoxSeln = function(){
+          if( boxEnabled ){
+            cy.boxSelectionEnabled( true );
+          }
+        };
+
+        var restoreGestures = function(){
+          restoreGrab();
+          restoreZoom();
+          restorePan();
+          restoreBoxSeln();
+        };
+
         bindings
           .on(options.openMenuEvents, options.selector, function(e){
             target = this; // Remember which node the context menu is for
@@ -419,9 +433,7 @@ SOFTWARE.
 
               inGesture = false;
 
-              restoreGrab();
-              restoreZoom();
-              restorePan();
+              restoreGestures();
             }
 
             if( typeof options.commands === 'function' ){
@@ -437,6 +449,9 @@ SOFTWARE.
 
             panEnabled = cy.userPanningEnabled();
             cy.userPanningEnabled( false );
+
+            boxEnabled = cy.boxSelectionEnabled();
+            cy.boxSelectionEnabled( false );
 
             grabbable = target.grabbable &&  target.grabbable();
             if( grabbable ){
@@ -558,9 +573,7 @@ SOFTWARE.
 
             inGesture = false;
 
-            restoreGrab();
-            restoreZoom();
-            restorePan();
+            restoreGestures();
           })
 
           .on('cxttapend tapend', function(e){
@@ -568,9 +581,7 @@ SOFTWARE.
 
             inGesture = false;
 
-            restoreGrab();
-            restoreZoom();
-            restorePan();
+            restoreGestures();
           })
         ;
       }
