@@ -55,6 +55,7 @@ SOFTWARE.
   if (typeof Object.assign != 'function') {
     (function () {
       Object.assign = function (target) {
+        'use strict';
         // We must check against these specific cases.
         if (target === undefined || target === null) {
           throw new TypeError('Cannot convert undefined or null to object');
@@ -114,6 +115,7 @@ SOFTWARE.
 
     cytoscape('core', 'cxtmenu', function(params){
       var options = Object.assign({}, defaults, params);
+      var fn = params;
       var cy = this;
       var container = cy.container();
       var target;
@@ -143,7 +145,7 @@ SOFTWARE.
       var c2d = canvas.getContext('2d');
       var r = options.menuRadius;
       var containerSize = (r + options.activePadding)*2;
-      var activeCommandI;
+      var activeCommandI = undefined;
       var offset;
 
       container.insertBefore(wrapper, container.firstChild);
@@ -387,7 +389,6 @@ SOFTWARE.
         var zoomEnabled;
         var panEnabled;
         var gestureStartEvent;
-        var boxSelectionEnabled;
 
         var restoreZoom = function(){
           if( zoomEnabled ){
@@ -407,19 +408,6 @@ SOFTWARE.
           }
         };
 
-        var restoreBoxSeln = function(){
-          if( boxSelectionEnabled ){
-            cy.boxSelectionEnabled( true );
-          }
-        };
-
-        var restoreGestures = function(){
-          restoreGrab();
-          restoreZoom();
-          restorePan();
-          restoreBoxSeln();
-        };
-
         bindings
           .on(options.openMenuEvents, options.selector, function(e){
             target = this; // Remember which node the context menu is for
@@ -431,7 +419,9 @@ SOFTWARE.
 
               inGesture = false;
 
-              restoreGestures();
+              restoreGrab();
+              restoreZoom();
+              restorePan();
             }
 
             if( typeof options.commands === 'function' ){
@@ -440,16 +430,13 @@ SOFTWARE.
               commands = options.commands;
             }
 
-            if( !commands || commands.length === 0 ){ return; }
+            if( !commands || commands.length == 0 ){ return; }
 
             zoomEnabled = cy.userZoomingEnabled();
             cy.userZoomingEnabled( false );
 
             panEnabled = cy.userPanningEnabled();
             cy.userPanningEnabled( false );
-
-            boxSelectionEnabled = cy.boxSelectionEnabled();
-            cy.boxSelectionEnabled( false );
 
             grabbable = target.grabbable &&  target.grabbable();
             if( grabbable ){
@@ -555,31 +542,35 @@ SOFTWARE.
 
           .on('tapdrag', dragHandler)
 
-          .on('cxttap tap', options.selector, function(e){
+          .on('cxttapend tapend', options.selector, function(e){
             var ele = this;
+
+            parent.style.display = 'none';
+
             if( activeCommandI !== undefined ){
               var select = commands[ activeCommandI ].select;
+
               if( select ){
                 select.apply( ele, [ele, gestureStartEvent] );
                 activeCommandI = undefined;
               }
             }
+
+            inGesture = false;
+
+            restoreGrab();
+            restoreZoom();
+            restorePan();
           })
 
           .on('cxttapend tapend', function(e){
-            if (options.openMenuEvents === 'tap') {
-              var ele = this;
-              if (activeCommandI !== undefined) {
-                var select = commands[ activeCommandI ].select;
-                if (select) {
-                  select.apply(ele, [ele, gestureStartEvent]);
-                  activeCommandI = undefined;
-                }
-              }
-            }
             parent.style.display = 'none';
+
             inGesture = false;
-            restoreGestures();
+
+            restoreGrab();
+            restoreZoom();
+            restorePan();
           })
         ;
       }
