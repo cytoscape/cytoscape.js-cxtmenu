@@ -55,7 +55,6 @@ SOFTWARE.
   if (typeof Object.assign != 'function') {
     (function () {
       Object.assign = function (target) {
-        'use strict';
         // We must check against these specific cases.
         if (target === undefined || target === null) {
           throw new TypeError('Cannot convert undefined or null to object');
@@ -115,7 +114,6 @@ SOFTWARE.
 
     cytoscape('core', 'cxtmenu', function(params){
       var options = Object.assign({}, defaults, params);
-      var fn = params;
       var cy = this;
       var container = cy.container();
       var target;
@@ -145,7 +143,7 @@ SOFTWARE.
       var c2d = canvas.getContext('2d');
       var r = options.menuRadius;
       var containerSize = (r + options.activePadding)*2;
-      var activeCommandI = undefined;
+      var activeCommandI;
       var offset;
 
       container.insertBefore(wrapper, container.firstChild);
@@ -170,57 +168,57 @@ SOFTWARE.
       canvas.width = containerSize;
       canvas.height = containerSize;
 
-    function createMenuItems() {
-      removeEles('.cxtmenu-item', parent);
-      var dtheta = 2 * Math.PI / (commands.length);
-      var theta1 = Math.PI / 2;
-      var theta2 = theta1 + dtheta;
+      function createMenuItems() {
+        removeEles('.cxtmenu-item', parent);
+        var dtheta = 2 * Math.PI / (commands.length);
+        var theta1 = Math.PI / 2;
+        var theta2 = theta1 + dtheta;
 
-      for (var i = 0; i < commands.length; i++) {
-        var command = commands[i];
+        for (var i = 0; i < commands.length; i++) {
+          var command = commands[i];
 
-        var midtheta = (theta1 + theta2) / 2;
-        var rx1 = 0.66 * r * Math.cos(midtheta);
-        var ry1 = 0.66 * r * Math.sin(midtheta);
+          var midtheta = (theta1 + theta2) / 2;
+          var rx1 = 0.66 * r * Math.cos(midtheta);
+          var ry1 = 0.66 * r * Math.sin(midtheta);
 
-        var item = createElement({class: 'cxtmenu-item'});
-        setStyles(item, {
-          color: options.itemColor,
-          cursor: 'default',
-          display: 'table',
-          'text-align': 'center',
-          //background: 'red',
-          position: 'absolute',
-          'text-shadow': '-1px -1px ' + options.itemTextShadowColor + ', 1px -1px ' + options.itemTextShadowColor + ', -1px 1px ' + options.itemTextShadowColor + ', 1px 1px ' + options.itemTextShadowColor,
-          left: '50%',
-          top: '50%',
-          'min-height': (r * 0.66) + 'px',
-          width: (r * 0.66) + 'px',
-          height: (r * 0.66) + 'px',
-          marginLeft: (rx1 - r * 0.33) + 'px',
-          marginTop: (-ry1 - r * 0.33) + 'px'
-        });
+          var item = createElement({class: 'cxtmenu-item'});
+          setStyles(item, {
+            color: options.itemColor,
+            cursor: 'default',
+            display: 'table',
+            'text-align': 'center',
+            //background: 'red',
+            position: 'absolute',
+            'text-shadow': '-1px -1px ' + options.itemTextShadowColor + ', 1px -1px ' + options.itemTextShadowColor + ', -1px 1px ' + options.itemTextShadowColor + ', 1px 1px ' + options.itemTextShadowColor,
+            left: '50%',
+            top: '50%',
+            'min-height': (r * 0.66) + 'px',
+            width: (r * 0.66) + 'px',
+            height: (r * 0.66) + 'px',
+            marginLeft: (rx1 - r * 0.33) + 'px',
+            marginTop: (-ry1 - r * 0.33) + 'px'
+          });
 
-        var content = createElement({class: 'cxtmenu-content'});
-        content.innerHTML = command.content;
-        setStyles(content, {
-          'width': (r * 0.66) + 'px',
-          'height': (r * 0.66) + 'px',
-          'vertical-align': 'middle',
-          'display': 'table-cell'
-        });
+          var content = createElement({class: 'cxtmenu-content'});
+          content.innerHTML = command.content;
+          setStyles(content, {
+            'width': (r * 0.66) + 'px',
+            'height': (r * 0.66) + 'px',
+            'vertical-align': 'middle',
+            'display': 'table-cell'
+          });
 
-        if (command.disabled) {
-          content.classList.add('cxtmenu-disabled');
+          if (command.disabled) {
+            content.classList.add('cxtmenu-disabled');
+          }
+
+          parent.appendChild(item);
+          item.appendChild(content);
+
+          theta1 += dtheta;
+          theta2 += dtheta;
         }
-
-        parent.appendChild(item);
-        item.appendChild(content);
-
-        theta1 += dtheta;
-        theta2 += dtheta;
       }
-    }
 
       function queueDrawBg( rspotlight ){
         redrawQueue.drawBg = [ rspotlight ];
@@ -442,7 +440,7 @@ SOFTWARE.
               commands = options.commands;
             }
 
-            if( !commands || commands.length == 0 ){ return; }
+            if( !commands || commands.length === 0 ){ return; }
 
             zoomEnabled = cy.userZoomingEnabled();
             cy.userZoomingEnabled( false );
