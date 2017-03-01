@@ -7,7 +7,7 @@
     "url": "https://github.com/cytoscape/cytoscape.js-cxtmenu.git"
   },
   "dependencies": {
-    "cytoscape": "^2.2.0"
+    "cytoscape": "^2.2.0 || ^3.0.0"
   },
   "ignore": [
     "**/.*",
