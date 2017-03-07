@@ -610,9 +610,7 @@ SOFTWARE.
 
   if( typeof module !== 'undefined' && module.exports ){ // expose as a commonjs module
     module.exports = register;
-  }
-
-  if( typeof define !== 'undefined' && define.amd ){ // expose as an amd/requirejs module
+  } else if( typeof define !== 'undefined' && define.amd ){ // expose as an amd/requirejs module
     define('cytoscape-cxtmenu', function(){
       return register;
     });
