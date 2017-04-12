@@ -108,6 +108,10 @@ SOFTWARE.
     return el;
   };
 
+  var getPixelRatio = function(){
+    return window.devicePixelRatio || 1;
+  };
+
   // registers the extension on a cytoscape lib ref
   var register = function(cytoscape){
     if( !cytoscape ){ return; } // can't register if cytoscape unspecified
@@ -139,6 +143,7 @@ SOFTWARE.
       data.container = wrapper;
       var parent = createElement();
       var canvas = createElement({tag: 'canvas'});
+      var pxRatio;
       var commands = [];
       var c2d = canvas.getContext('2d');
       var r = options.menuRadius;
@@ -189,7 +194,7 @@ SOFTWARE.
             'text-align': 'center',
             //background: 'red',
             position: 'absolute',
-            'text-shadow': '-1px -1px ' + options.itemTextShadowColor + ', 1px -1px ' + options.itemTextShadowColor + ', -1px 1px ' + options.itemTextShadowColor + ', 1px 1px ' + options.itemTextShadowColor,
+            'text-shadow': '-1px -1px 2px ' + options.itemTextShadowColor + ', 1px -1px 2px ' + options.itemTextShadowColor + ', -1px 1px 2px ' + options.itemTextShadowColor + ', 1px 1px 1px ' + options.itemTextShadowColor,
             left: '50%',
             top: '50%',
             'min-height': (r * 0.66) + 'px',
@@ -310,15 +315,23 @@ SOFTWARE.
         c2d.fillStyle = 'white';
         c2d.globalCompositeOperation = 'destination-out';
 
+        var tx = r + options.activePadding + rx/r*(rs + options.spotlightPadding - options.indicatorSize/4);
+        var ty = r + options.activePadding + ry/r*(rs + options.spotlightPadding - options.indicatorSize/4);
+        var rot = Math.PI/4 - theta;
+
+        c2d.translate( tx, ty );
+        c2d.rotate( rot );
+
         // clear the indicator
         c2d.beginPath();
-        c2d.translate( r + options.activePadding + rx/r*(rs + options.spotlightPadding - options.indicatorSize/4), r + options.activePadding + ry/r*(rs + options.spotlightPadding - options.indicatorSize/4) );
-        c2d.rotate( Math.PI/4 - theta );
         c2d.fillRect(-options.indicatorSize/2, -options.indicatorSize/2, options.indicatorSize, options.indicatorSize);
         c2d.closePath();
         c2d.fill();
 
-        c2d.setTransform(1, 0, 0, 1, 0, 0);
+        c2d.rotate( -rot );
+        c2d.translate( -tx, -ty );
+
+        // c2d.setTransform( 1, 0, 0, 1, 0, 0 );
 
         // clear the spotlight
         c2d.beginPath();
@@ -329,10 +342,27 @@ SOFTWARE.
         c2d.globalCompositeOperation = 'source-over';
       }
 
+      function updatePixelRatio(){
+        var pxr = getPixelRatio();
+        var w = container.clientWidth;
+        var h = container.clientHeight;
+
+        canvas.width = w * pxr;
+        canvas.height = h * pxr;
+
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+
+        c2d.setTransform( 1, 0, 0, 1, 0, 0 );
+        c2d.scale( pxr, pxr );
+      }
+
       var redrawing = true;
       var redrawQueue = {};
       var raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
       var redraw = function(){
+        var pxr = getPixelRatio();
+
         if( redrawQueue.drawBg ){
           drawBg.apply( null, redrawQueue.drawBg );
         }
@@ -348,7 +378,9 @@ SOFTWARE.
         }
       };
 
-      redraw(); // kick off
+      // kick off
+      updatePixelRatio();
+      redraw();
 
       var ctrx, ctry, rs;
 
@@ -420,7 +452,13 @@ SOFTWARE.
           restoreBoxSeln();
         };
 
+        window.addEventListener('resize', updatePixelRatio);
+
         bindings
+          .on('resize', function(e){
+            updatePixelRatio();
+          })
+
           .on(options.openMenuEvents, options.selector, function(e){
             target = this; // Remember which node the context menu is for
             var ele = this;
@@ -586,6 +624,8 @@ SOFTWARE.
             cy.off(h.events, h.selector, h.fn);
           }
         }
+
+        window.removeEventListener('resize', updatePixelRatio);
       }
 
       function destroyInstance(){
