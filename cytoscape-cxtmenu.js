@@ -143,7 +143,6 @@ SOFTWARE.
       data.container = wrapper;
       var parent = createElement();
       var canvas = createElement({tag: 'canvas'});
-      var pxRatio;
       var commands = [];
       var c2d = canvas.getContext('2d');
       var r = options.menuRadius;
@@ -361,8 +360,6 @@ SOFTWARE.
       var redrawQueue = {};
       var raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
       var redraw = function(){
-        var pxr = getPixelRatio();
-
         if( redrawQueue.drawBg ){
           drawBg.apply( null, redrawQueue.drawBg );
         }
