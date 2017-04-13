@@ -497,7 +497,7 @@ SOFTWARE.
               rw = ele.renderedWidth();
               rh = ele.renderedHeight();
             } else {
-              rp = e.cyRenderedPosition;
+              rp = e.renderedPosition || e.cyRenderedPosition;
               rw = 1;
               rh = 1;
             }
