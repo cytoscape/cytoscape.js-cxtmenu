@@ -387,7 +387,7 @@ SOFTWARE.
           var _fn = fn;
           if( selector === 'core'){
             _fn = function( e ){
-              if( e.cyTarget === cy ){ // only if event target is directly core
+              if( e.cyTarget === cy || e.target === cy ){ // only if event target is directly core
                 return fn.apply( this, [ e ] );
               }
             };
