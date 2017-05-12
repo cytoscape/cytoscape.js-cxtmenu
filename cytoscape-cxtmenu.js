@@ -32,7 +32,8 @@ SOFTWARE.
         content: 'a command name' // html/text content to be displayed in the menu
         select: function(ele){ // a function to execute when the command is selected
           console.log( ele.id() ) // `ele` holds the reference to the active element
-        }
+        },
+        enabled: true // whether the command is selectable
       }
       */
     ], // function( ele ){ return [ /*...*/ ] }, // example function for commands
@@ -212,7 +213,7 @@ SOFTWARE.
             'display': 'table-cell'
           });
 
-          if (command.disabled) {
+          if (command.disabled === true || command.enabled === false) {
             content.classList.add('cxtmenu-disabled');
           }
 
