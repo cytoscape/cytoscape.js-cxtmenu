@@ -12,7 +12,7 @@ This plugin creates a widget that lets the user operate circular context menus o
 
 ## Dependencies
 
- * Cytoscape.js >= 2.2
+ * Cytoscape.js ^2.2.0 || ^3.0.0
 
 
 ## Usage instructions
@@ -66,11 +66,11 @@ var defaults = {
     /*
     { // example command
       fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
-      content: 'a command name', // html/text content to be displayed in the menu
+      content: 'a command name' // html/text content to be displayed in the menu
       select: function(ele){ // a function to execute when the command is selected
         console.log( ele.id() ) // `ele` holds the reference to the active element
       },
-      disabled: false // disables the item on true
+      enabled: true // whether the command is selectable
     }
     */
   ], // function( ele ){ return [ /*...*/ ] }, // example function for commands
@@ -82,7 +82,7 @@ var defaults = {
   spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
   minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
   maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
-  openMenuEvents: 'cxttapstart taphold', // cytoscape events that will open the menu (space separated)
+  openMenuEvents: 'cxttapstart taphold', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
   itemColor: 'white', // the colour of text in the command's content
   itemTextShadowColor: 'black', // the text shadow colour of the command's content
   zIndex: 9999, // the z-index of the ui div
