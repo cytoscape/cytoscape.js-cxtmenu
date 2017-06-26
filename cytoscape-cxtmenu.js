@@ -52,10 +52,12 @@ SOFTWARE.
     atMouse: false // draw menu at mouse position
   };
 
+  var assign;
+
   // Object.assign Polyfill for IE
   if (typeof Object.assign != 'function') {
     (function () {
-      Object.assign = function (target) {
+      assign = function (target) {
         // We must check against these specific cases.
         if (target === undefined || target === null) {
           throw new TypeError('Cannot convert undefined or null to object');
@@ -75,6 +77,8 @@ SOFTWARE.
         return output;
       };
     })();
+  } else {
+    assign = Object.assign.bind( Object );
   }
 
   var removeEles = function(query, ancestor) {
@@ -118,7 +122,7 @@ SOFTWARE.
     if( !cytoscape ){ return; } // can't register if cytoscape unspecified
 
     cytoscape('core', 'cxtmenu', function(params){
-      var options = Object.assign({}, defaults, params);
+      var options = assign({}, defaults, params);
       var cy = this;
       var container = cy.container();
       var target;
