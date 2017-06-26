@@ -161,7 +161,8 @@ SOFTWARE.
 
       setStyles(wrapper, {
         position: 'absolute',
-        zIndex: options.zIndex
+        zIndex: options.zIndex,
+        userSelect: 'none'
       });
 
       setStyles(parent, {
@@ -171,7 +172,8 @@ SOFTWARE.
         position: 'absolute',
         zIndex: 1,
         marginLeft: - options.activePadding + 'px',
-        marginTop: - options.activePadding + 'px'
+        marginTop: - options.activePadding + 'px',
+        userSelect: 'none'
       });
 
       canvas.width = containerSize;
