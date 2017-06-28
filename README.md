@@ -1,7 +1,7 @@
 cytoscape-cxtmenu
 ================================================================================
 
-![Preview](https://raw.githubusercontent.com/cytoscape/cytoscape.js-cxtmenu/master/img/preview.png)
+![Preview](https://raw.githubusercontent.com/cytoscape/cytoscape.js-cxtmenu/master/img/preview-submenu.png)
 
 ## Description
 
@@ -70,7 +70,14 @@ var defaults = {
       select: function(ele){ // a function to execute when the command is selected
         console.log( ele.id() ) // `ele` holds the reference to the active element
       },
-      enabled: true // whether the command is selectable
+      enabled: true, // whether the command is selectable
+      subCommands:[
+        content: '<span class="fa fa-eye fa-2x"></span>', html/text content to be displayed in the sub-menu
+        select: function () {// a function to execute when the sub-command is selected
+            console.log(this.id());
+        },
+        disabled:false // whether the sub-command is unselectable
+      ]
     }
     */
   ], // function( ele ){ return [ /*...*/ ] }, // example function for commands
