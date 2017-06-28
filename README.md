@@ -1,7 +1,7 @@
 cytoscape-cxtmenu
 ================================================================================
 
-![Preview](https://raw.githubusercontent.com/cytoscape/cytoscape.js-cxtmenu/master/img/preview-submenu.png)
+![Preview](https://raw.githubusercontent.com/jakdosen/cytoscape.js-cxtmenu/master/img/preview-submenu.png)
 
 ## Description
 
