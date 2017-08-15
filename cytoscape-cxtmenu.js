@@ -464,6 +464,8 @@ SOFTWARE.
           })
 
           .on(options.openMenuEvents, options.selector, function(e){
+            // prevent event bubbling for menu clicks
+            if(e.originalEvent.path.some(function(ele){return ele.className == wrapper.className;})){return;}
             target = this; // Remember which node the context menu is for
             var ele = this;
             var isCy = this === cy;
