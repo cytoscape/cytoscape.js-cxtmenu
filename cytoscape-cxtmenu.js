@@ -45,7 +45,7 @@ SOFTWARE.
     spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
     minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
     maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
-    openMenuEvents: 'cxttapstart taphold', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
+    openMenuEvents: 'cxttapstart taphold', // space-separated cytoscape events that will open the menu; only `cxttapstart` and `taphold` or `click` work here
     itemColor: 'white', // the colour of text in the command's content
     itemTextShadowColor: 'transparent', // the text shadow colour of the command's content
     zIndex: 9999, // the z-index of the ui div
@@ -464,6 +464,9 @@ SOFTWARE.
           })
 
           .on(options.openMenuEvents, options.selector, function(e){
+            // prevent event bubbling for menu clicks
+            if(e.originalEvent.composedPath() && e.originalEvent.composedPath().some(function(ele){return ele.className == wrapper.className;})){return;}
+
             target = this; // Remember which node the context menu is for
             var ele = this;
             var isCy = this === cy;
@@ -555,9 +558,16 @@ SOFTWARE.
             var cosTheta = (dy*dy - d*d - dx*dx)/(-2 * d * dx);
             var theta = Math.acos( cosTheta );
 
-            if( d < rs + options.spotlightPadding ){
-              queueDrawBg();
-              return;
+            if(options.openMenuEvents == "click"){
+              if( d < rs + options.spotlightPadding ||  d > r + options.activePadding){
+                queueDrawBg();
+                return;
+              }
+            } else {
+              if( d < rs + options.spotlightPadding){
+                queueDrawBg();
+                return;
+              }
             }
 
             queueDrawBg();
