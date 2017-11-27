@@ -1,19 +1,19 @@
 cytoscape-cxtmenu
 ================================================================================
+
 [![DOI](https://zenodo.org/badge/16010906.svg)](https://zenodo.org/badge/latestdoi/16010906)
 
-![Preview](https://raw.githubusercontent.com/cytoscape/cytoscape.js-cxtmenu/master/img/preview.png)
+![Preview](https://raw.githubusercontent.com/cytoscape/cytoscape.js-cxtmenu/master/preview.png)
 
 ## Description
 
-A context menu for Cytoscape.js
+A circular, swipeable context menu extension for Cytoscape.js ([demo](https://cytoscape.github.io/cytoscape.js-cxtmenu))
 
-This plugin creates a widget that lets the user operate circular context menus on nodes in Cytoscape.js.  The user swipes along the circular menu to select a menu item and perform a command on the node of interest.
-
+This extension creates a widget that lets the user operate circular context menus on nodes in Cytoscape.js.  The user swipes along the circular menu to select a menu item and perform a command on either a node, a edge, or the graph background.
 
 ## Dependencies
 
- * Cytoscape.js ^2.2.0 || ^3.0.0
+ * Cytoscape.js ^3.2.0
 
 
 ## Usage instructions
@@ -23,17 +23,28 @@ Download the library:
  * via bower: `bower install cytoscape-cxtmenu`, or
  * via direct download in the repository (probably from a tag).
 
-`require()` the library as appropriate for your project:
+Import the library as appropriate for your project:
 
-CommonJS:
+ES import:
+
 ```js
-var cytoscape = require('cytoscape');
-var cxtmenu = require('cytoscape-cxtmenu');
+import cytoscape from 'cytoscape';
+import cxtmenu from 'cytoscape-cxtmenu';
 
-cxtmenu( cytoscape ); // register extension
+cytoscape.use( cxtmenu );
+```
+
+CommonJS require:
+
+```js
+let cytoscape = require('cytoscape');
+let cxtmenu = require('cytoscape-cxtmenu');
+
+cytoscape.use( cxtmenu ); // register extension
 ```
 
 AMD:
+
 ```js
 require(['cytoscape', 'cytoscape-cxtmenu'], function( cytoscape, cxtmenu ){
   cxtmenu( cytoscape ); // register extension
@@ -54,13 +65,13 @@ You initialise the plugin on the same HTML DOM element container used for Cytosc
 
 ```js
 
-var cy = cytoscape({
+let cy = cytoscape({
 	container: document.getElementById('cy'),
 	/* ... */
 });
 
 // the default values of each option are outlined below:
-var defaults = {
+let defaults = {
   menuRadius: 100, // the radius of the circular menu in pixels
   selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
   commands: [ // an array of commands to list in the menu or a function that returns the array
@@ -68,6 +79,7 @@ var defaults = {
     { // example command
       fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
       content: 'a command name' // html/text content to be displayed in the menu
+      contentStyle: {}, // css key:value pairs to set the command's css in js if you want
       select: function(ele){ // a function to execute when the command is selected
         console.log( ele.id() ) // `ele` holds the reference to the active element
       },
@@ -76,7 +88,7 @@ var defaults = {
     */
   ], // function( ele ){ return [ /*...*/ ] }, // example function for commands
   fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
-  activeFillColor: 'rgba(92, 194, 237, 0.75)', // the colour used to indicate the selected command
+  activeFillColor: 'rgba(1, 105, 217, 0.75)', // the colour used to indicate the selected command
   activePadding: 20, // additional size in pixels for the active command
   indicatorSize: 24, // the size in pixels of the pointer to the active command
   separatorWidth: 3, // the empty spacing in pixels between successive commands
@@ -85,28 +97,42 @@ var defaults = {
   maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
   openMenuEvents: 'cxttapstart taphold', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
   itemColor: 'white', // the colour of text in the command's content
-  itemTextShadowColor: 'black', // the text shadow colour of the command's content
+  itemTextShadowColor: 'transparent', // the text shadow colour of the command's content
   zIndex: 9999, // the z-index of the ui div
   atMouse: false // draw menu at mouse position
 };
 
-var cxtmenuApi = cy.cxtmenu( defaults );
+let menu = cy.cxtmenu( defaults );
 ```
 
 You get access to the cxtmenu API as the returned value of calling the extension.  You can use this to clean up and destroy the menu instance:
 
 ```js
-var cxtmenuApi = cy.cxtmenu( someOptions );
+let menu = cy.cxtmenu( someOptions );
 
-cxtmenuApi.destroy();
+menu.destroy();
 ```
+
+
+## Build targets
+
+* `npm run test` : Run Mocha tests in `./test`
+* `npm run build` : Build `./src/**` into `cytoscape-cxtmenu.js`
+* `npm run watch` : Automatically build on changes with live reloading (N.b. you must already have an HTTP server running)
+* `npm run dev` : Automatically build on changes with live reloading with webpack dev server
+* `npm run lint` : Run eslint on the source
+
+N.b. all builds use babel, so modern ES features can be used in the `src`.
 
 
 ## Publishing instructions
 
 This project is set up to automatically be published to npm and bower.  To publish:
 
-1. Set the version number environment variable: `export VERSION=1.2.3`
-1. Publish: `gulp publish`
+1. Build the extension : `npm run build`
+1. Commit the build : `git commit -am "Build for release"`
+1. Bump the version number and tag: `npm version major|minor|patch`
+1. Push to origin: `git push && git push --tags`
+1. Publish to npm: `npm publish .`
 1. If publishing to bower for the first time, you'll need to run `bower register cytoscape-cxtmenu https://github.com/cytoscape/cytoscape.js-cxtmenu.git`
-1. Make a release on GitHub to automatically register a new Zenodo DOI
+1. [Make a new release](https://github.com/cytoscape/cytoscape.js-cxtmenu/releases/new) for Zenodo.

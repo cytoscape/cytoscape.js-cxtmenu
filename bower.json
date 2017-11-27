@@ -1,13 +1,13 @@
 {
   "name": "cytoscape-cxtmenu",
-  "description": "A context menu for Cytoscape.js",
+  "description": "A circular, swipeable context menu extension for Cytoscape.js",
   "main": "cytoscape-cxtmenu.js",
+  "dependencies": {
+    "cytoscape": "^3.2.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/cytoscape/cytoscape.js-cxtmenu.git"
-  },
-  "dependencies": {
-    "cytoscape": "^2.2.0 || ^3.0.0"
   },
   "ignore": [
     "**/.*",
@@ -18,9 +18,7 @@
   ],
   "keywords": [
     "cytoscape",
-    "cytoscape.js",
-    "cytoscapejs",
-    "extension"
+    "cytoscape-extension"
   ],
   "license": "MIT"
 }
