@@ -456,7 +456,7 @@ let cxtmenu = function(params){
           let inThisCommand = theta1 <= theta && theta <= theta2
             || theta1 <= theta + 2*Math.PI && theta + 2*Math.PI <= theta2;
 
-          if( command.disabled ){
+          if( command.disabled === true || command.enabled === false ){
             inThisCommand = false;
           }
 
