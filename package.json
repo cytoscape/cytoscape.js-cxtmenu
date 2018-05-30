@@ -1,6 +1,6 @@
 {
   "name": "cytoscape-cxtmenu",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A circular, swipeable context menu extension for Cytoscape.js",
   "main": "cytoscape-cxtmenu.js",
   "author": {
@@ -10,7 +10,7 @@
   "scripts": {
     "postpublish": "run-s gh-pages:demo gh-pages:deploy gh-pages:clean",
     "gh-pages:demo": "cpy demo.html . --rename=index.html",
-    "gh-pages:deploy": "gh-pages -d .",
+    "gh-pages:deploy": "gh-pages -d . -v node_modules/**",
     "gh-pages:clean": "rimraf index.html",
     "copyright": "update license",
     "lint": "eslint src",
