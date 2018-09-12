@@ -98,6 +98,11 @@ let cxtmenu = function(params){
 
       if (command.disabled === true || command.enabled === false) {
         content.classList.add('cxtmenu-disabled');
+      } else if(typeof(command.enabled) === 'function') {
+        let enabled = command.enabled.apply(target, [target]);
+        if(!enabled) {
+          content.classList.add('cxtmenu-disabled');
+        }
       }
 
       parent.appendChild(item);
@@ -458,6 +463,11 @@ let cxtmenu = function(params){
 
           if( command.disabled === true || command.enabled === false ){
             inThisCommand = false;
+          } else if(typeof(command.enabled) === 'function') {
+            let enabled = command.enabled.apply(target, [target]);
+            if(!enabled) {
+              inThisCommand = false;
+            }
           }
 
           if( inThisCommand ){
