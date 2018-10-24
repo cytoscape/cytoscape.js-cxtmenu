@@ -242,7 +242,15 @@ let cxtmenu = function(params){
 
   let redrawing = true;
   let redrawQueue = {};
-  let raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
+
+  let raf = (
+    window.requestAnimationFrame
+    || window.webkitRequestAnimationFrame
+    || window.mozRequestAnimationFrame
+    || window.msRequestAnimationFrame
+    || (fn => setTimeout(fn, 16))
+  );
+
   let redraw = function(){
     if( redrawQueue.drawBg ){
       drawBg.apply( null, redrawQueue.drawBg );
