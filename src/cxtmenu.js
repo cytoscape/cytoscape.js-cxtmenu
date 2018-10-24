@@ -31,7 +31,8 @@ let cxtmenu = function(params){
   setStyles(wrapper, {
     position: 'absolute',
     zIndex: options.zIndex,
-    userSelect: 'none'
+    userSelect: 'none',
+    pointerEvents: 'none'
   });
 
   setStyles(parent, {
