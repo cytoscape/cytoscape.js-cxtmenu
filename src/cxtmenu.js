@@ -97,7 +97,7 @@ let cxtmenu = function(params){
       setStyles(content, command.contentStyle || {});
 
       if (command.disabled === true || command.enabled === false) {
-        content.classList.add('cxtmenu-disabled');
+        content.setAttribute('class', 'cxtmenu-content cxtmenu-disabled');
       }
 
       parent.appendChild(item);
