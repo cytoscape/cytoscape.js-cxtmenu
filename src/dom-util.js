@@ -1,5 +1,11 @@
 const removeEles = function(query, ancestor = document) {
-  ancestor.querySelectorAll(query).forEach( el => el.parentNode.removeChild(el) );
+  let els = ancestor.querySelectorAll(query);
+
+  for( let i = 0; i < els.length; i++ ){
+    let el = els[i];
+
+    el.parentNode.removeChild(el);
+  }
 };
 
 const setStyles = function(el, style) {

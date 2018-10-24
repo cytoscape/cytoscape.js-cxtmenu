@@ -31,7 +31,17 @@ let cxtmenu = function(params){
   setStyles(wrapper, {
     position: 'absolute',
     zIndex: options.zIndex,
-    userSelect: 'none'
+    userSelect: 'none',
+    pointerEvents: 'none' // prevent events on menu in modern browsers
+  });
+
+  // prevent events on menu in legacy browsers
+  ['mousedown', 'mousemove', 'mouseup', 'contextmenu'].forEach(evt => {
+    wrapper.addEventListener(evt, e => {
+      e.preventDefault();
+
+      return false;
+    });
   });
 
   setStyles(parent, {
@@ -97,7 +107,7 @@ let cxtmenu = function(params){
       setStyles(content, command.contentStyle || {});
 
       if (command.disabled === true || command.enabled === false) {
-        content.classList.add('cxtmenu-disabled');
+        content.setAttribute('class', 'cxtmenu-content cxtmenu-disabled');
       }
 
       parent.appendChild(item);
@@ -227,8 +237,8 @@ let cxtmenu = function(params){
 
   function updatePixelRatio(){
     let pxr = getPixelRatio();
-    let w = container.clientWidth;
-    let h = container.clientHeight;
+    let w = containerSize;
+    let h = containerSize;
 
     canvas.width = w * pxr;
     canvas.height = h * pxr;
@@ -242,7 +252,15 @@ let cxtmenu = function(params){
 
   let redrawing = true;
   let redrawQueue = {};
-  let raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
+
+  let raf = (
+    window.requestAnimationFrame
+    || window.webkitRequestAnimationFrame
+    || window.mozRequestAnimationFrame
+    || window.msRequestAnimationFrame
+    || (fn => setTimeout(fn, 16))
+  );
+
   let redraw = function(){
     if( redrawQueue.drawBg ){
       drawBg.apply( null, redrawQueue.drawBg );

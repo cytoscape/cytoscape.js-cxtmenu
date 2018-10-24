@@ -122,7 +122,17 @@ var cxtmenu = function cxtmenu(params) {
   setStyles(wrapper, {
     position: 'absolute',
     zIndex: options.zIndex,
-    userSelect: 'none'
+    userSelect: 'none',
+    pointerEvents: 'none' // prevent events on menu in modern browsers
+  });
+
+  // prevent events on menu in legacy browsers
+  ['mousedown', 'mousemove', 'mouseup', 'contextmenu'].forEach(function (evt) {
+    wrapper.addEventListener(evt, function (e) {
+      e.preventDefault();
+
+      return false;
+    });
   });
 
   setStyles(parent, {
@@ -188,7 +198,7 @@ var cxtmenu = function cxtmenu(params) {
       setStyles(content, command.contentStyle || {});
 
       if (command.disabled === true || command.enabled === false) {
-        content.classList.add('cxtmenu-disabled');
+        content.setAttribute('class', 'cxtmenu-content cxtmenu-disabled');
       }
 
       parent.appendChild(item);
@@ -317,8 +327,8 @@ var cxtmenu = function cxtmenu(params) {
 
   function updatePixelRatio() {
     var pxr = getPixelRatio();
-    var w = container.clientWidth;
-    var h = container.clientHeight;
+    var w = containerSize;
+    var h = containerSize;
 
     canvas.width = w * pxr;
     canvas.height = h * pxr;
@@ -332,7 +342,11 @@ var cxtmenu = function cxtmenu(params) {
 
   var redrawing = true;
   var redrawQueue = {};
-  var raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
+
+  var raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame || function (fn) {
+    return setTimeout(fn, 16);
+  };
+
   var redraw = function redraw() {
     if (redrawQueue.drawBg) {
       drawBg.apply(null, redrawQueue.drawBg);
@@ -632,7 +646,9 @@ module.exports = Object.assign != null ? Object.assign.bind(Object) : function (
     srcs[_key - 1] = arguments[_key];
   }
 
-  srcs.forEach(function (src) {
+  srcs.filter(function (src) {
+    return src != null;
+  }).forEach(function (src) {
     Object.keys(src).forEach(function (k) {
       return tgt[k] = src[k];
     });
@@ -691,9 +707,13 @@ module.exports = defaults;
 var removeEles = function removeEles(query) {
   var ancestor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
 
-  ancestor.querySelectorAll(query).forEach(function (el) {
-    return el.parentNode.removeChild(el);
-  });
+  var els = ancestor.querySelectorAll(query);
+
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+
+    el.parentNode.removeChild(el);
+  }
 };
 
 var setStyles = function setStyles(el, style) {
