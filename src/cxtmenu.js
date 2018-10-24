@@ -32,7 +32,16 @@ let cxtmenu = function(params){
     position: 'absolute',
     zIndex: options.zIndex,
     userSelect: 'none',
-    pointerEvents: 'none'
+    pointerEvents: 'none' // prevent events on menu in modern browsers
+  });
+
+  // prevent events on menu in legacy browsers
+  ['mousedown', 'mousemove', 'mouseup', 'contextmenu'].forEach(evt => {
+    wrapper.addEventListener(evt, e => {
+      e.preventDefault();
+
+      return false;
+    });
   });
 
   setStyles(parent, {
