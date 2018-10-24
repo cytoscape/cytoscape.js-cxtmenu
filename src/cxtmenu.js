@@ -227,8 +227,8 @@ let cxtmenu = function(params){
 
   function updatePixelRatio(){
     let pxr = getPixelRatio();
-    let w = container.clientWidth;
-    let h = container.clientHeight;
+    let w = containerSize;
+    let h = containerSize;
 
     canvas.width = w * pxr;
     canvas.height = h * pxr;
