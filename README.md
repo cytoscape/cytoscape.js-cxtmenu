@@ -86,7 +86,7 @@ let defaults = {
       enabled: true // whether the command is selectable
     }
     */
-  ], // function( ele ){ return [ /*...*/ ] }, // example function for commands
+  ], // function( ele ){ return [ /*...*/ ] }, // a function that returns commands or a promise of commands
   fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
   activeFillColor: 'rgba(1, 105, 217, 0.75)', // the colour used to indicate the selected command
   activePadding: 20, // additional size in pixels for the active command
