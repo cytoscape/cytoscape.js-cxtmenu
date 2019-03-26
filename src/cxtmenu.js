@@ -373,7 +373,7 @@ let cxtmenu = function(params){
 
         if( typeof options.commands === 'function' ){
           const res = options.commands(target);
-          if( res instanceof Promise ){
+          if( res.then ){
             res.then(_commands => {
               commands = _commands;
               openMenu();
