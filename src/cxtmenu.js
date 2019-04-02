@@ -372,61 +372,73 @@ let cxtmenu = function(params){
         }
 
         if( typeof options.commands === 'function' ){
-          commands = options.commands(target);
+          const res = options.commands(target);
+          if( res.then ){
+            res.then(_commands => {
+              commands = _commands;
+              openMenu();
+            })
+          } else {
+            commands = res;
+            openMenu();
+          }
         } else {
           commands = options.commands;
+          openMenu();
         }
 
-        if( !commands || commands.length === 0 ){ return; }
+        function openMenu(){
+          if( !commands || commands.length === 0 ){ return; }
 
-        zoomEnabled = cy.userZoomingEnabled();
-        cy.userZoomingEnabled( false );
+          zoomEnabled = cy.userZoomingEnabled();
+          cy.userZoomingEnabled( false );
 
-        panEnabled = cy.userPanningEnabled();
-        cy.userPanningEnabled( false );
+          panEnabled = cy.userPanningEnabled();
+          cy.userPanningEnabled( false );
 
-        boxEnabled = cy.boxSelectionEnabled();
-        cy.boxSelectionEnabled( false );
+          boxEnabled = cy.boxSelectionEnabled();
+          cy.boxSelectionEnabled( false );
 
-        grabbable = target.grabbable &&  target.grabbable();
-        if( grabbable ){
-          target.ungrabify();
+          grabbable = target.grabbable &&  target.grabbable();
+          if( grabbable ){
+            target.ungrabify();
+          }
+
+          let rp, rw, rh;
+          if( !isCy && ele.isNode() && !ele.isParent() && !options.atMouse ){
+            rp = ele.renderedPosition();
+            rw = ele.renderedWidth();
+            rh = ele.renderedHeight();
+          } else {
+            rp = e.renderedPosition || e.cyRenderedPosition;
+            rw = 1;
+            rh = 1;
+          }
+
+          offset = getOffset(container);
+
+          ctrx = rp.x;
+          ctry = rp.y;
+
+          createMenuItems();
+
+          setStyles(parent, {
+            display: 'block',
+            left: (rp.x - r) + 'px',
+            top: (rp.y - r) + 'px'
+          });
+
+          rs = Math.max(rw, rh)/2;
+          rs = Math.max(rs, options.minSpotlightRadius);
+          rs = Math.min(rs, options.maxSpotlightRadius);
+
+          queueDrawBg();
+
+          activeCommandI = undefined;
+
+          inGesture = true;
+          gestureStartEvent = e;
         }
-
-        let rp, rw, rh;
-        if( !isCy && ele.isNode() && !ele.isParent() && !options.atMouse ){
-          rp = ele.renderedPosition();
-          rw = ele.renderedWidth();
-          rh = ele.renderedHeight();
-        } else {
-          rp = e.renderedPosition || e.cyRenderedPosition;
-          rw = 1;
-          rh = 1;
-        }
-
-        offset = getOffset(container);
-
-        ctrx = rp.x;
-        ctry = rp.y;
-
-        createMenuItems();
-
-        setStyles(parent, {
-          display: 'block',
-          left: (rp.x - r) + 'px',
-          top: (rp.y - r) + 'px'
-        });
-
-        rs = Math.max(rw, rh)/2;
-        rs = Math.max(rs, options.minSpotlightRadius);
-        rs = Math.min(rs, options.maxSpotlightRadius);
-
-        queueDrawBg();
-
-        activeCommandI = undefined;
-
-        inGesture = true;
-        gestureStartEvent = e;
       })
 
       .on('cxtdrag tapdrag', options.selector, dragHandler = function(e){
