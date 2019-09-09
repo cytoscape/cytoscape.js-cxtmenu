@@ -448,8 +448,8 @@ let cxtmenu = function(params){
         let origE = e.originalEvent;
         let isTouch = origE.touches && origE.touches.length > 0;
 
-        let pageX = isTouch ? origE.touches[0].pageX : origE.pageX;
-        let pageY = isTouch ? origE.touches[0].pageY : origE.pageY;
+        let pageX = (isTouch ? origE.touches[0].pageX : origE.pageX) - window.scrollX;
+        let pageY = (isTouch ? origE.touches[0].pageY : origE.pageY) - window.scrollY;
 
         activeCommandI = undefined;
 
