@@ -1,5 +1,5 @@
 let defaults = {
-  menuRadius: 100, // the radius of the circular menu in pixels
+  menuRadius: function(ele){ return 100 }, // the radius of the circular menu in pixels
   selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
   commands: [ // an array of commands to list in the menu or a function that returns the array
     /*

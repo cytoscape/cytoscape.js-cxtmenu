@@ -72,7 +72,7 @@ let cy = cytoscape({
 
 // the default values of each option are outlined below:
 let defaults = {
-  menuRadius: 100, // the radius of the circular menu in pixels
+  menuRadius: function(ele){ return 100; }, // the outer radius (node center to the end of the menu) in pixels. It is added to the rendered size of the node. 
   selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
   commands: [ // an array of commands to list in the menu or a function that returns the array
     /*
