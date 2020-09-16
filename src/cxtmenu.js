@@ -200,8 +200,8 @@ let cxtmenu = function(params){
     c2d.strokeStyle = 'black';
     c2d.lineWidth = 1;
     c2d.beginPath();
-    c2d.moveTo(r + options.activePadding, r + options.activePadding);
-    c2d.arc(r + options.activePadding, r + options.activePadding, r + options.activePadding, 2*Math.PI - theta1, 2*Math.PI - theta2, true);
+    c2d.moveTo(radius + options.activePadding, radius + options.activePadding);
+    c2d.arc(radius + options.activePadding, radius + options.activePadding, radius + options.activePadding, 2*Math.PI - theta1, 2*Math.PI - theta2, true);
     c2d.closePath();
     c2d.fill();
 
@@ -228,7 +228,7 @@ let cxtmenu = function(params){
 
     // clear the spotlight
     c2d.beginPath();
-    c2d.arc(r + options.activePadding, radius + options.activePadding, rs + options.spotlightPadding, 0, Math.PI*2, true);
+    c2d.arc(radius + options.activePadding, radius + options.activePadding, rs + options.spotlightPadding, 0, Math.PI*2, true);
     c2d.closePath();
     c2d.fill();
 
@@ -420,7 +420,7 @@ let cxtmenu = function(params){
           ctrx = rp.x;
           ctry = rp.y;
 
-          r = rw/2 + options.menuRadius(target);
+          r = rw/2 + (options.menuRadius instanceof Function ? options.menuRadius(target) : Number(options.menuRadius));
           containerSize = (r + options.activePadding)*2;
           updatePixelRatio();
 
@@ -469,13 +469,13 @@ let cxtmenu = function(params){
 
 
         let rw;
-        if(target && typeof target.isNode === "function" && target.isNode() && !target.isParent() && !options.atMouse ){
+        if(target && target.isNode instanceof Function && target.isNode() && !target.isParent() && !options.atMouse ){
           rw = target.renderedOuterWidth();
         } else {
           rw = 1;
         }
 
-        r = rw/2 + options.menuRadius(target);
+        r = rw/2 + (options.menuRadius instanceof Function ? options.menuRadius(target) : Number(options.menuRadius));
         if( d < rs + options.spotlightPadding ){
           queueDrawBg(r);
           return;
