@@ -110,7 +110,8 @@ var cxtmenu = function cxtmenu(params) {
   var canvas = createElement({ tag: 'canvas' });
   var commands = [];
   var c2d = canvas.getContext('2d');
-  var r = options.menuRadius;
+
+  var r = 100; // defailt radius;
   var containerSize = (r + options.activePadding) * 2;
   var activeCommandI = void 0;
   var offset = void 0;
@@ -209,13 +210,12 @@ var cxtmenu = function cxtmenu(params) {
     }
   }
 
-  function queueDrawBg(rspotlight) {
-    redrawQueue.drawBg = [rspotlight];
+  function queueDrawBg(radius, rspotlight) {
+    redrawQueue.drawBg = [radius, rspotlight];
   }
 
-  function drawBg(rspotlight) {
+  function drawBg(radius, rspotlight) {
     rspotlight = rspotlight !== undefined ? rspotlight : rs;
-
     c2d.globalCompositeOperation = 'source-over';
 
     c2d.clearRect(0, 0, containerSize, containerSize);
@@ -233,8 +233,8 @@ var cxtmenu = function cxtmenu(params) {
         c2d.fillStyle = command.fillColor;
       }
       c2d.beginPath();
-      c2d.moveTo(r + options.activePadding, r + options.activePadding);
-      c2d.arc(r + options.activePadding, r + options.activePadding, r, 2 * Math.PI - theta1, 2 * Math.PI - theta2, true);
+      c2d.moveTo(radius + options.activePadding, radius + options.activePadding);
+      c2d.arc(radius + options.activePadding, radius + options.activePadding, radius, 2 * Math.PI - theta1, 2 * Math.PI - theta2, true);
       c2d.closePath();
       c2d.fill();
 
@@ -252,11 +252,11 @@ var cxtmenu = function cxtmenu(params) {
     theta2 = theta1 + dtheta;
 
     for (var i = 0; i < commands.length; i++) {
-      var rx1 = r * Math.cos(theta1);
-      var ry1 = r * Math.sin(theta1);
+      var rx1 = radius * Math.cos(theta1);
+      var ry1 = radius * Math.sin(theta1);
       c2d.beginPath();
-      c2d.moveTo(r + options.activePadding, r + options.activePadding);
-      c2d.lineTo(r + options.activePadding + rx1, r + options.activePadding - ry1);
+      c2d.moveTo(radius + options.activePadding, radius + options.activePadding);
+      c2d.lineTo(radius + options.activePadding + rx1, radius + options.activePadding - ry1);
       c2d.closePath();
       c2d.stroke();
 
@@ -267,18 +267,18 @@ var cxtmenu = function cxtmenu(params) {
     c2d.fillStyle = 'white';
     c2d.globalCompositeOperation = 'destination-out';
     c2d.beginPath();
-    c2d.arc(r + options.activePadding, r + options.activePadding, rspotlight + options.spotlightPadding, 0, Math.PI * 2, true);
+    c2d.arc(radius + options.activePadding, radius + options.activePadding, rspotlight + options.spotlightPadding, 0, Math.PI * 2, true);
     c2d.closePath();
     c2d.fill();
 
     c2d.globalCompositeOperation = 'source-over';
   }
 
-  function queueDrawCommands(rx, ry, theta) {
-    redrawQueue.drawCommands = [rx, ry, theta];
+  function queueDrawCommands(rx, ry, radius, theta) {
+    redrawQueue.drawCommands = [rx, ry, radius, theta];
   }
 
-  function drawCommands(rx, ry, theta) {
+  function drawCommands(rx, ry, radius, theta) {
     var dtheta = 2 * Math.PI / commands.length;
     var theta1 = Math.PI / 2;
     var theta2 = theta1 + dtheta;
@@ -290,16 +290,16 @@ var cxtmenu = function cxtmenu(params) {
     c2d.strokeStyle = 'black';
     c2d.lineWidth = 1;
     c2d.beginPath();
-    c2d.moveTo(r + options.activePadding, r + options.activePadding);
-    c2d.arc(r + options.activePadding, r + options.activePadding, r + options.activePadding, 2 * Math.PI - theta1, 2 * Math.PI - theta2, true);
+    c2d.moveTo(radius + options.activePadding, radius + options.activePadding);
+    c2d.arc(radius + options.activePadding, radius + options.activePadding, radius + options.activePadding, 2 * Math.PI - theta1, 2 * Math.PI - theta2, true);
     c2d.closePath();
     c2d.fill();
 
     c2d.fillStyle = 'white';
     c2d.globalCompositeOperation = 'destination-out';
 
-    var tx = r + options.activePadding + rx / r * (rs + options.spotlightPadding - options.indicatorSize / 4);
-    var ty = r + options.activePadding + ry / r * (rs + options.spotlightPadding - options.indicatorSize / 4);
+    var tx = radius + options.activePadding + rx / radius * (rs + options.spotlightPadding - options.indicatorSize / 4);
+    var ty = radius + options.activePadding + ry / radius * (rs + options.spotlightPadding - options.indicatorSize / 4);
     var rot = Math.PI / 4 - theta;
 
     c2d.translate(tx, ty);
@@ -318,7 +318,7 @@ var cxtmenu = function cxtmenu(params) {
 
     // clear the spotlight
     c2d.beginPath();
-    c2d.arc(r + options.activePadding, r + options.activePadding, rs + options.spotlightPadding, 0, Math.PI * 2, true);
+    c2d.arc(radius + options.activePadding, radius + options.activePadding, rs + options.spotlightPadding, 0, Math.PI * 2, true);
     c2d.closePath();
     c2d.fill();
 
@@ -497,8 +497,8 @@ var cxtmenu = function cxtmenu(params) {
             rh = void 0;
         if (!isCy && ele.isNode() && !ele.isParent() && !options.atMouse) {
           rp = ele.renderedPosition();
-          rw = ele.renderedWidth();
-          rh = ele.renderedHeight();
+          rw = ele.renderedOuterWidth();
+          rh = ele.renderedOuterHeight();
         } else {
           rp = e.renderedPosition || e.cyRenderedPosition;
           rw = 1;
@@ -510,19 +510,24 @@ var cxtmenu = function cxtmenu(params) {
         ctrx = rp.x;
         ctry = rp.y;
 
-        createMenuItems();
+        r = rw / 2 + (options.menuRadius instanceof Function ? options.menuRadius(target) : Number(options.menuRadius));
+        containerSize = (r + options.activePadding) * 2;
+        updatePixelRatio();
 
         setStyles(parent, {
+          width: containerSize + 'px',
+          height: containerSize + 'px',
           display: 'block',
           left: rp.x - r + 'px',
           top: rp.y - r + 'px'
         });
+        createMenuItems();
 
         rs = Math.max(rw, rh) / 2;
         rs = Math.max(rs, options.minSpotlightRadius);
         rs = Math.min(rs, options.maxSpotlightRadius);
 
-        queueDrawBg();
+        queueDrawBg(r);
 
         activeCommandI = undefined;
 
@@ -554,12 +559,19 @@ var cxtmenu = function cxtmenu(params) {
       var cosTheta = (dy * dy - d * d - dx * dx) / (-2 * d * dx);
       var theta = Math.acos(cosTheta);
 
-      if (d < rs + options.spotlightPadding) {
-        queueDrawBg();
-        return;
+      var rw = void 0;
+      if (target && target.isNode instanceof Function && target.isNode() && !target.isParent() && !options.atMouse) {
+        rw = target.renderedOuterWidth();
+      } else {
+        rw = 1;
       }
 
-      queueDrawBg();
+      r = rw / 2 + (options.menuRadius instanceof Function ? options.menuRadius(target) : Number(options.menuRadius));
+      if (d < rs + options.spotlightPadding) {
+        queueDrawBg(r);
+        return;
+      }
+      queueDrawBg(r);
 
       var rx = dx * r / d;
       var ry = dy * r / d;
@@ -590,7 +602,7 @@ var cxtmenu = function cxtmenu(params) {
         theta2 += dtheta;
       }
 
-      queueDrawCommands(rx, ry, theta);
+      queueDrawCommands(rx, ry, r, theta);
     }).on('tapdrag', dragHandler).on('cxttapend tapend', function () {
       parent.style.display = 'none';
 
@@ -677,7 +689,9 @@ module.exports = Object.assign != null ? Object.assign.bind(Object) : function (
 
 
 var defaults = {
-  menuRadius: 100, // the radius of the circular menu in pixels
+  menuRadius: function menuRadius(ele) {
+    return 100;
+  }, // the radius of the circular menu in pixels
   selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
   commands: [// an array of commands to list in the menu or a function that returns the array
     /*
