@@ -59,7 +59,7 @@ let cxtmenu = function(params){
   canvas.width = containerSize;
   canvas.height = containerSize;
 
-  function createMenuItems() {
+  function createMenuItems(r, rs) {
     removeEles('.cxtmenu-item', parent);
     let dtheta = 2 * Math.PI / (commands.length);
     let theta1 = Math.PI / 2;
@@ -69,8 +69,14 @@ let cxtmenu = function(params){
       let command = commands[i];
 
       let midtheta = (theta1 + theta2) / 2;
-      let rx1 = 0.66 * r * Math.cos(midtheta);
-      let ry1 = 0.66 * r * Math.sin(midtheta);
+      let rx1 = ((r + rs)/2) * Math.cos(midtheta);
+      let ry1 = ((r + rs)/2) * Math.sin(midtheta);
+
+      // Arbitrary multiplier to increase the sizing of the space 
+      // available for the item.
+      let width =  1.5 * Math.abs((r - rs) * Math.cos(midtheta));
+      let height = 1.5 * Math.abs((r - rs) * Math.sin(midtheta));
+      width = Math.max(width, height)
 
       let item = createElement({class: 'cxtmenu-item'});
       setStyles(item, {
@@ -83,11 +89,11 @@ let cxtmenu = function(params){
         'text-shadow': '-1px -1px 2px ' + options.itemTextShadowColor + ', 1px -1px 2px ' + options.itemTextShadowColor + ', -1px 1px 2px ' + options.itemTextShadowColor + ', 1px 1px 1px ' + options.itemTextShadowColor,
         left: '50%',
         top: '50%',
-        'min-height': (r * 0.66) + 'px',
-        width: (r * 0.66) + 'px',
-        height: (r * 0.66) + 'px',
-        marginLeft: (rx1 - r * 0.33) + 'px',
-        marginTop: (-ry1 - r * 0.33) + 'px'
+        'min-height': width + 'px',
+        width: width + 'px',
+        height: width + 'px',
+        marginLeft: (rx1 - width/2) + 'px',
+        marginTop: (-ry1 - width/2) + 'px'
       });
 
       let content = createElement({class: 'cxtmenu-content'});
@@ -99,10 +105,10 @@ let cxtmenu = function(params){
       }
 
       setStyles(content, {
-        'width': (r * 0.66) + 'px',
-        'height': (r * 0.66) + 'px',
+        'width': width + 'px',
+        'height': width + 'px',
         'vertical-align': 'middle',
-        'display': 'table-cell'
+        'display': 'table-cell',
       });
 
       setStyles(content, command.contentStyle || {});
@@ -124,7 +130,6 @@ let cxtmenu = function(params){
   }
 
   function drawBg( radius, rspotlight ){
-    rspotlight = rspotlight !== undefined ? rspotlight : rs;
     c2d.globalCompositeOperation = 'source-over';
 
     c2d.clearRect(0, 0, containerSize, containerSize);
@@ -421,6 +426,9 @@ let cxtmenu = function(params){
           ctry = rp.y;
 
           r = rw/2 + (options.menuRadius instanceof Function ? options.menuRadius(target) : Number(options.menuRadius));
+          rs = Math.max(rw, rh)/2;
+          rs = options.minSpotlightRadius ? Math.max(rs, options.minSpotlightRadius): rs;
+          rs = options.maxSpotlightRadius ? Math.min(rs, options.maxSpotlightRadius): rs;
           containerSize = (r + options.activePadding)*2;
           updatePixelRatio();
 
@@ -431,13 +439,8 @@ let cxtmenu = function(params){
             left: (rp.x - r) + 'px',
             top: (rp.y - r) + 'px'
           });
-          createMenuItems();
-
-          rs = Math.max(rw, rh)/2;
-          rs = Math.max(rs, options.minSpotlightRadius);
-          rs = Math.min(rs, options.maxSpotlightRadius);
-
-          queueDrawBg(r);
+          createMenuItems(r, rs);
+          queueDrawBg(r, rs);
 
           activeCommandI = undefined;
 
@@ -476,11 +479,14 @@ let cxtmenu = function(params){
         }
 
         r = rw/2 + (options.menuRadius instanceof Function ? options.menuRadius(target) : Number(options.menuRadius));
+        rs = rw/2;
+        rs = options.maxSpotlightRadius ? Math.max(rs, options.maxSpotlightRadius): rs;
+        rs = options.maxSpotlightRadius ? Math.min(rs, options.maxSpotlightRadius): rs;
         if( d < rs + options.spotlightPadding ){
-          queueDrawBg(r);
+          queueDrawBg(r, rs);
           return;
         }
-        queueDrawBg(r);
+        queueDrawBg(r, rs);
 
         let rx = dx*r / d;
         let ry = dy*r / d;

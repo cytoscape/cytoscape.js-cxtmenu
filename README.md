@@ -72,7 +72,7 @@ let cy = cytoscape({
 
 // the default values of each option are outlined below:
 let defaults = {
-  menuRadius: function(ele){ return 100; }, // the outer radius (node center to the end of the menu) in pixels. It is added to the rendered size of the node. 
+  menuRadius: function(ele){ return 100; }, // the outer radius (node center to the end of the menu) in pixels. It is added to the rendered size of the node. Can either be a number or function as in the example.
   selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
   commands: [ // an array of commands to list in the menu or a function that returns the array
     /*
@@ -93,8 +93,8 @@ let defaults = {
   indicatorSize: 24, // the size in pixels of the pointer to the active command
   separatorWidth: 3, // the empty spacing in pixels between successive commands
   spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
-  minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
-  maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
+  minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight, set to undefined if you want the spotlight to be size of the node.
+  maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight, set to undefined if you want the spotlight to be size of the node.
   openMenuEvents: 'cxttapstart taphold', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
   itemColor: 'white', // the colour of text in the command's content
   itemTextShadowColor: 'transparent', // the text shadow colour of the command's content
