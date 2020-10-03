@@ -74,8 +74,8 @@ let cxtmenu = function(params){
 
       // Arbitrary multiplier to increase the sizing of the space 
       // available for the item.
-      let width =  1.5 * Math.abs((r - rs) * Math.cos(midtheta));
-      let height = 1.5 * Math.abs((r - rs) * Math.sin(midtheta));
+      let width = 1 * Math.abs((r - rs) * Math.cos(midtheta));
+      let height = 1 * Math.abs((r - rs) * Math.sin(midtheta));
       width = Math.max(width, height)
 
       let item = createElement({class: 'cxtmenu-item'});
@@ -409,26 +409,31 @@ let cxtmenu = function(params){
             target.ungrabify();
           }
 
-          let rp, rw, rh;
-          if( !isCy && ele.isNode() && !ele.isParent() && !options.atMouse ){
+          let rp, rw, rh, rs;
+          if( !isCy && ele && ele.isNode instanceof Function && ele.isNode() && !ele.isParent() && !options.atMouse ){
+            // If it's a node, the default spotlight radius for a node is the node width
             rp = ele.renderedPosition();
             rw = ele.renderedOuterWidth();
             rh = ele.renderedOuterHeight();
+            rs = rw/2;
+            // If adaptativeNodespotlightRadius is not enabled and min|maxSpotlighrRadius is defined, use those instead
+            rs = !options.adaptativeNodeSpotlightRadius && options.minSpotlightRadius ? Math.max(rs, options.minSpotlightRadius): rs;
+            rs = !options.adaptativeNodeSpotlightRadius && options.maxSpotlightRadius ? Math.min(rs, options.maxSpotlightRadius): rs;
           } else {
+            // If it's the background or an edge, the spotlight radius is the min|maxSpotlightRadius
             rp = e.renderedPosition || e.cyRenderedPosition;
             rw = 1;
             rh = 1;
+            rs = rw/2;
+            rs = options.minSpotlightRadius ? Math.max(rs, options.minSpotlightRadius): rs;
+            rs = options.maxSpotlightRadius ? Math.min(rs, options.maxSpotlightRadius): rs;
           }
 
           offset = getOffset(container);
 
           ctrx = rp.x;
           ctry = rp.y;
-
           r = rw/2 + (options.menuRadius instanceof Function ? options.menuRadius(target) : Number(options.menuRadius));
-          rs = Math.max(rw, rh)/2;
-          rs = options.minSpotlightRadius ? Math.max(rs, options.minSpotlightRadius): rs;
-          rs = options.maxSpotlightRadius ? Math.min(rs, options.maxSpotlightRadius): rs;
           containerSize = (r + options.activePadding)*2;
           updatePixelRatio();
 
@@ -473,15 +478,21 @@ let cxtmenu = function(params){
 
         let rw;
         if(target && target.isNode instanceof Function && target.isNode() && !target.isParent() && !options.atMouse ){
+          // If it's a node, the default spotlight radius for a node is the node width
           rw = target.renderedOuterWidth();
+          rs = rw/2;
+          // If adaptativeNodespotlightRadius is not enabled and min|maxSpotlighrRadius is defined, use those instead
+          rs = !options.adaptativeNodeSpotlightRadius && options.minSpotlightRadius ? Math.max(rs, options.minSpotlightRadius): rs;
+          rs = !options.adaptativeNodeSpotlightRadius && options.maxSpotlightRadius ? Math.min(rs, options.maxSpotlightRadius): rs;
         } else {
+          // If it's the background or an edge, the spotlight radius is the min|maxSpotlightRadius
           rw = 1;
+          rs = rw/2;
+          rs = options.minSpotlightRadius ? Math.max(rs, options.minSpotlightRadius): rs;
+          rs = options.maxSpotlightRadius ? Math.min(rs, options.maxSpotlightRadius): rs;
         }
 
         r = rw/2 + (options.menuRadius instanceof Function ? options.menuRadius(target) : Number(options.menuRadius));
-        rs = rw/2;
-        rs = options.maxSpotlightRadius ? Math.max(rs, options.maxSpotlightRadius): rs;
-        rs = options.maxSpotlightRadius ? Math.min(rs, options.maxSpotlightRadius): rs;
         if( d < rs + options.spotlightPadding ){
           queueDrawBg(r, rs);
           return;

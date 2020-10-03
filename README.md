@@ -93,8 +93,9 @@ let defaults = {
   indicatorSize: 24, // the size in pixels of the pointer to the active command
   separatorWidth: 3, // the empty spacing in pixels between successive commands
   spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
-  minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight, set to undefined if you want the spotlight to be size of the node.
-  maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight, set to undefined if you want the spotlight to be size of the node.
+  adaptativeNodeSpotlightRadius: false, // specify whether the spotlight radius should adapt to the node size
+  minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight (ignored for the node if adaptativeNodeSpotlightRadius is enabled but still used for the edge & background)
+  maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight (ignored for the node if adaptativeNodeSpotlightRadius is enabled but still used for the edge & background)
   openMenuEvents: 'cxttapstart taphold', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
   itemColor: 'white', // the colour of text in the command's content
   itemTextShadowColor: 'transparent', // the text shadow colour of the command's content
