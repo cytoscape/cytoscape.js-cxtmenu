@@ -117,7 +117,7 @@
 					]
 				});
 
-				cy.cxtmenu({
+				window.contextMenu = cy.cxtmenu({
 					selector: 'core',
 
 					commands: [
@@ -135,7 +135,16 @@
 							}
 						}
 					]
+				}); 
+				window.contextMenu.options.commands.push({
+					content: 'bg3',
+							select: function(){
+								console.log( 'bg3' );
+							}
 				});
+				window.contextMenu.options.beforeMenuOpen = function(){
+					window.contextMenu.options.commands.splice(0,1);
+				}
 
 			});
 		</script>

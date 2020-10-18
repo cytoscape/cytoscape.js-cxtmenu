@@ -478,6 +478,11 @@ var cxtmenu = function cxtmenu(params) {
           return;
         }
 
+        // Allow menu options to be hidden dynamically
+        if (options.beforeMenuOpen) {
+          options.beforeMenuOpen();
+        }
+
         zoomEnabled = cy.userZoomingEnabled();
         cy.userZoomingEnabled(false);
 
@@ -650,7 +655,8 @@ var cxtmenu = function cxtmenu(params) {
   return {
     destroy: function destroy() {
       destroyInstance();
-    }
+    },
+    options: options
   };
 };
 
