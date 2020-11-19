@@ -189,11 +189,11 @@ let cxtmenu = function(params){
     c2d.globalCompositeOperation = 'source-over';
   }
 
-  function queueDrawCommands( rx, ry, radius, theta ){
-    redrawQueue.drawCommands = [ rx, ry, radius, theta ];
+  function queueDrawCommands( rx, ry, radius, theta, rspotlight ){
+    redrawQueue.drawCommands = [ rx, ry, radius, theta, rspotlight ];
   }
 
-  function drawCommands( rx, ry, radius, theta ){
+  function drawCommands( rx, ry, radius, theta, rs ){
     let dtheta = 2*Math.PI/(commands.length);
     let theta1 = Math.PI/2;
     let theta2 = theta1 + dtheta;
@@ -221,8 +221,11 @@ let cxtmenu = function(params){
     c2d.rotate( rot );
 
     // clear the indicator
+    // The indicator size (arrow) depends on the node size as well. If the indicator size is bigger and the rendered node size + padding, 
+    // use the rendered node size + padding as the indicator size.
+    let indicatorSize = options.indicatorSize > rs + options.spotlightPadding ? rs + options.spotlightPadding : options.indicatorSize
     c2d.beginPath();
-    c2d.fillRect(-options.indicatorSize/2, -options.indicatorSize/2, options.indicatorSize, options.indicatorSize);
+    c2d.fillRect(-indicatorSize/2, -indicatorSize/2, indicatorSize, indicatorSize);
     c2d.closePath();
     c2d.fill();
 
@@ -529,7 +532,7 @@ let cxtmenu = function(params){
           theta2 += dtheta;
         }
 
-        queueDrawCommands( rx, ry, r, theta );
+        queueDrawCommands( rx, ry, r, theta, rs );
       })
 
       .on('tapdrag', dragHandler)
