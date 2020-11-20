@@ -59,7 +59,7 @@ let cxtmenu = function(params){
   canvas.width = containerSize;
   canvas.height = containerSize;
 
-  function createMenuItems() {
+  function createMenuItems(r, rs) {
     removeEles('.cxtmenu-item', parent);
     let dtheta = 2 * Math.PI / (commands.length);
     let theta1 = Math.PI / 2;
@@ -69,8 +69,14 @@ let cxtmenu = function(params){
       let command = commands[i];
 
       let midtheta = (theta1 + theta2) / 2;
-      let rx1 = 0.66 * r * Math.cos(midtheta);
-      let ry1 = 0.66 * r * Math.sin(midtheta);
+      let rx1 = ((r + rs)/2) * Math.cos(midtheta);
+      let ry1 = ((r + rs)/2) * Math.sin(midtheta);
+
+      // Arbitrary multiplier to increase the sizing of the space 
+      // available for the item.
+      let width = 1 * Math.abs((r - rs) * Math.cos(midtheta));
+      let height = 1 * Math.abs((r - rs) * Math.sin(midtheta));
+      width = Math.max(width, height)
 
       let item = createElement({class: 'cxtmenu-item'});
       setStyles(item, {
@@ -83,11 +89,11 @@ let cxtmenu = function(params){
         'text-shadow': '-1px -1px 2px ' + options.itemTextShadowColor + ', 1px -1px 2px ' + options.itemTextShadowColor + ', -1px 1px 2px ' + options.itemTextShadowColor + ', 1px 1px 1px ' + options.itemTextShadowColor,
         left: '50%',
         top: '50%',
-        'min-height': (r * 0.66) + 'px',
-        width: (r * 0.66) + 'px',
-        height: (r * 0.66) + 'px',
-        marginLeft: (rx1 - r * 0.33) + 'px',
-        marginTop: (-ry1 - r * 0.33) + 'px'
+        'min-height': width + 'px',
+        width: width + 'px',
+        height: width + 'px',
+        marginLeft: (rx1 - width/2) + 'px',
+        marginTop: (-ry1 - width/2) + 'px'
       });
 
       let content = createElement({class: 'cxtmenu-content'});
@@ -99,10 +105,10 @@ let cxtmenu = function(params){
       }
 
       setStyles(content, {
-        'width': (r * 0.66) + 'px',
-        'height': (r * 0.66) + 'px',
+        'width': width + 'px',
+        'height': width + 'px',
         'vertical-align': 'middle',
-        'display': 'table-cell'
+        'display': 'table-cell',
       });
 
       setStyles(content, command.contentStyle || {});
@@ -124,7 +130,6 @@ let cxtmenu = function(params){
   }
 
   function drawBg( radius, rspotlight ){
-    rspotlight = rspotlight !== undefined ? rspotlight : rs;
     c2d.globalCompositeOperation = 'source-over';
 
     c2d.clearRect(0, 0, containerSize, containerSize);
@@ -184,11 +189,11 @@ let cxtmenu = function(params){
     c2d.globalCompositeOperation = 'source-over';
   }
 
-  function queueDrawCommands( rx, ry, radius, theta ){
-    redrawQueue.drawCommands = [ rx, ry, radius, theta ];
+  function queueDrawCommands( rx, ry, radius, theta, rspotlight ){
+    redrawQueue.drawCommands = [ rx, ry, radius, theta, rspotlight ];
   }
 
-  function drawCommands( rx, ry, radius, theta ){
+  function drawCommands( rx, ry, radius, theta, rs ){
     let dtheta = 2*Math.PI/(commands.length);
     let theta1 = Math.PI/2;
     let theta2 = theta1 + dtheta;
@@ -216,8 +221,11 @@ let cxtmenu = function(params){
     c2d.rotate( rot );
 
     // clear the indicator
+    // The indicator size (arrow) depends on the node size as well. If the indicator size is bigger and the rendered node size + padding, 
+    // use the rendered node size + padding as the indicator size.
+    let indicatorSize = options.indicatorSize > rs + options.spotlightPadding ? rs + options.spotlightPadding : options.indicatorSize
     c2d.beginPath();
-    c2d.fillRect(-options.indicatorSize/2, -options.indicatorSize/2, options.indicatorSize, options.indicatorSize);
+    c2d.fillRect(-indicatorSize/2, -indicatorSize/2, indicatorSize, indicatorSize);
     c2d.closePath();
     c2d.fill();
 
@@ -404,22 +412,30 @@ let cxtmenu = function(params){
             target.ungrabify();
           }
 
-          let rp, rw, rh;
-          if( !isCy && ele.isNode() && !ele.isParent() && !options.atMouse ){
+          let rp, rw, rh, rs;
+          if( !isCy && ele && ele.isNode instanceof Function && ele.isNode() && !ele.isParent() && !options.atMouse ){
+            // If it's a node, the default spotlight radius for a node is the node width
             rp = ele.renderedPosition();
             rw = ele.renderedOuterWidth();
             rh = ele.renderedOuterHeight();
+            rs = rw/2;
+            // If adaptativeNodespotlightRadius is not enabled and min|maxSpotlighrRadius is defined, use those instead
+            rs = !options.adaptativeNodeSpotlightRadius && options.minSpotlightRadius ? Math.max(rs, options.minSpotlightRadius): rs;
+            rs = !options.adaptativeNodeSpotlightRadius && options.maxSpotlightRadius ? Math.min(rs, options.maxSpotlightRadius): rs;
           } else {
+            // If it's the background or an edge, the spotlight radius is the min|maxSpotlightRadius
             rp = e.renderedPosition || e.cyRenderedPosition;
             rw = 1;
             rh = 1;
+            rs = rw/2;
+            rs = options.minSpotlightRadius ? Math.max(rs, options.minSpotlightRadius): rs;
+            rs = options.maxSpotlightRadius ? Math.min(rs, options.maxSpotlightRadius): rs;
           }
 
           offset = getOffset(container);
 
           ctrx = rp.x;
           ctry = rp.y;
-
           r = rw/2 + (options.menuRadius instanceof Function ? options.menuRadius(target) : Number(options.menuRadius));
           containerSize = (r + options.activePadding)*2;
           updatePixelRatio();
@@ -431,13 +447,8 @@ let cxtmenu = function(params){
             left: (rp.x - r) + 'px',
             top: (rp.y - r) + 'px'
           });
-          createMenuItems();
-
-          rs = Math.max(rw, rh)/2;
-          rs = Math.max(rs, options.minSpotlightRadius);
-          rs = Math.min(rs, options.maxSpotlightRadius);
-
-          queueDrawBg(r);
+          createMenuItems(r, rs);
+          queueDrawBg(r, rs);
 
           activeCommandI = undefined;
 
@@ -470,17 +481,26 @@ let cxtmenu = function(params){
 
         let rw;
         if(target && target.isNode instanceof Function && target.isNode() && !target.isParent() && !options.atMouse ){
+          // If it's a node, the default spotlight radius for a node is the node width
           rw = target.renderedOuterWidth();
+          rs = rw/2;
+          // If adaptativeNodespotlightRadius is not enabled and min|maxSpotlighrRadius is defined, use those instead
+          rs = !options.adaptativeNodeSpotlightRadius && options.minSpotlightRadius ? Math.max(rs, options.minSpotlightRadius): rs;
+          rs = !options.adaptativeNodeSpotlightRadius && options.maxSpotlightRadius ? Math.min(rs, options.maxSpotlightRadius): rs;
         } else {
+          // If it's the background or an edge, the spotlight radius is the min|maxSpotlightRadius
           rw = 1;
+          rs = rw/2;
+          rs = options.minSpotlightRadius ? Math.max(rs, options.minSpotlightRadius): rs;
+          rs = options.maxSpotlightRadius ? Math.min(rs, options.maxSpotlightRadius): rs;
         }
 
         r = rw/2 + (options.menuRadius instanceof Function ? options.menuRadius(target) : Number(options.menuRadius));
         if( d < rs + options.spotlightPadding ){
-          queueDrawBg(r);
+          queueDrawBg(r, rs);
           return;
         }
-        queueDrawBg(r);
+        queueDrawBg(r, rs);
 
         let rx = dx*r / d;
         let ry = dy*r / d;
@@ -512,7 +532,7 @@ let cxtmenu = function(params){
           theta2 += dtheta;
         }
 
-        queueDrawCommands( rx, ry, r, theta );
+        queueDrawCommands( rx, ry, r, theta, rs );
       })
 
       .on('tapdrag', dragHandler)

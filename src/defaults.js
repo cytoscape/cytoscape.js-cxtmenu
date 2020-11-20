@@ -17,11 +17,12 @@ let defaults = {
   fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
   activeFillColor: 'rgba(1, 105, 217, 0.75)', // the colour used to indicate the selected command
   activePadding: 20, // additional size in pixels for the active command
-  indicatorSize: 24, // the size in pixels of the pointer to the active command
+  indicatorSize: 24, // the size in pixels of the pointer to the active command, will default to the node size if the node size is smaller than the indicator size, 
   separatorWidth: 3, // the empty spacing in pixels between successive commands
   spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
-  minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
-  maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
+  adaptativeNodeSpotlightRadius: false, // specify whether the spotlight radius should adapt to the node size
+  minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight (ignored for the node if adaptativeNodeSpotlightRadius is enabled but still used for the edge & background)
+  maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight (ignored for the node if adaptativeNodeSpotlightRadius is enabled but still used for the edge & background)
   openMenuEvents: 'cxttapstart taphold', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
   itemColor: 'white', // the colour of text in the command's content
   itemTextShadowColor: 'transparent', // the text shadow colour of the command's content
