@@ -1,6 +1,6 @@
 {
   "name": "cytoscape-cxtmenu",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "A circular, swipeable context menu extension for Cytoscape.js",
   "main": "cytoscape-cxtmenu.js",
   "author": {
