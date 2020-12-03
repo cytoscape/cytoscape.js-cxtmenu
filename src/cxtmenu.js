@@ -460,6 +460,7 @@ let cxtmenu = function(params){
       .on('cxtdrag tapdrag', options.selector, dragHandler = function(e){
 
         if( !inGesture ){ return; }
+        e.preventDefault(); // Otherwise, on mobile, the pull-down refresh gesture gets activated
 
         let origE = e.originalEvent;
         let isTouch = origE.touches && origE.touches.length > 0;
