@@ -551,6 +551,7 @@ var cxtmenu = function cxtmenu(params) {
       if (!inGesture) {
         return;
       }
+      e.preventDefault(); // Otherwise, on mobile, the pull-down refresh gesture gets activated
 
       var origE = e.originalEvent;
       var isTouch = origE.touches && origE.touches.length > 0;
