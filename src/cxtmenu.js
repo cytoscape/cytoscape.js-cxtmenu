@@ -497,7 +497,9 @@ let cxtmenu = function(params){
         }
 
         r = rw/2 + (options.menuRadius instanceof Function ? options.menuRadius(target) : Number(options.menuRadius));
-        if( d < rs + options.spotlightPadding ){
+        if( d < rs + options.spotlightPadding
+            || (options.outsideMenuCancel && d > r + options.activePadding)){ //
+
           queueDrawBg(r, rs);
           return;
         }
@@ -532,7 +534,6 @@ let cxtmenu = function(params){
           theta1 += dtheta;
           theta2 += dtheta;
         }
-
         queueDrawCommands( rx, ry, r, theta, rs );
       })
 
@@ -540,7 +541,6 @@ let cxtmenu = function(params){
 
       .on('cxttapend tapend', function(){
         parent.style.display = 'none';
-
         if( activeCommandI !== undefined ){
           let select = commands[ activeCommandI ].select;
 
