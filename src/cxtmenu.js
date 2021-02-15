@@ -498,7 +498,7 @@ let cxtmenu = function(params){
 
         r = rw/2 + (options.menuRadius instanceof Function ? options.menuRadius(target) : Number(options.menuRadius));
         if( d < rs + options.spotlightPadding
-            || (options.outsideMenuCancel && d > r + options.activePadding)){ //
+            || (typeof options.outsideMenuCancel === "number" && d > r + options.activePadding + options.outsideMenuCancel)){ //
 
           queueDrawBg(r, rs);
           return;
