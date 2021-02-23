@@ -589,7 +589,9 @@ var cxtmenu = function cxtmenu(params) {
       }
 
       r = rw / 2 + (options.menuRadius instanceof Function ? options.menuRadius(target) : Number(options.menuRadius));
-      if (d < rs + options.spotlightPadding) {
+      if (d < rs + options.spotlightPadding || typeof options.outsideMenuCancel === "number" && d > r + options.activePadding + options.outsideMenuCancel) {
+        //
+
         queueDrawBg(r, rs);
         return;
       }
@@ -623,11 +625,9 @@ var cxtmenu = function cxtmenu(params) {
         theta1 += dtheta;
         theta2 += dtheta;
       }
-
       queueDrawCommands(rx, ry, r, theta, rs);
     }).on('tapdrag', dragHandler).on('cxttapend tapend', function () {
       parent.style.display = 'none';
-
       if (activeCommandI !== undefined) {
         var select = commands[activeCommandI].select;
 
@@ -741,7 +741,8 @@ var defaults = {
   itemColor: 'white', // the colour of text in the command's content
   itemTextShadowColor: 'transparent', // the text shadow colour of the command's content
   zIndex: 9999, // the z-index of the ui div
-  atMouse: false // draw menu at mouse position
+  atMouse: false, // draw menu at mouse position
+  outsideMenuCancel: false // if set to a number, this will cancel the command if the pointer is released outside of the spotlight, padded by the number given
 };
 
 module.exports = defaults;

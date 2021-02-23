@@ -8,8 +8,9 @@ cytoscape-cxtmenu
 ## Description
 
 A circular, swipeable context menu extension for Cytoscape.js 
-- Demo without adaptative spotlight radius features: [demo](https://cytoscape.github.io/cytoscape.js-cxtmenu)
+- Demo with default options: [demo](https://cytoscape.github.io/cytoscape.js-cxtmenu)
 - Demo with adaptative spotlight radius features: [demo](https://cytoscape.github.io/cytoscape.js-cxtmenu/demo-adaptative.html) 
+- Demo with `outsideMenuCancel`: [demo](https://cytoscape.github.io/cytoscape.js-cxtmenu/demo-cancel-outside.html) 
 
 This extension creates a widget that lets the user operate circular context menus on nodes in Cytoscape.js.  The user swipes along the circular menu to select a menu item and perform a command on either a node, a edge, or the graph background.
 
@@ -102,7 +103,8 @@ let defaults = {
   itemColor: 'white', // the colour of text in the command's content
   itemTextShadowColor: 'transparent', // the text shadow colour of the command's content
   zIndex: 9999, // the z-index of the ui div
-  atMouse: false // draw menu at mouse position
+  atMouse: false, // draw menu at mouse position
+  outsideMenuCancel: false // if set to a number, this will cancel the command if the pointer is released outside of the spotlight, padded by the number given 
 };
 
 let menu = cy.cxtmenu( defaults );

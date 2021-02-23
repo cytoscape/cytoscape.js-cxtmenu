@@ -27,7 +27,8 @@ let defaults = {
   itemColor: 'white', // the colour of text in the command's content
   itemTextShadowColor: 'transparent', // the text shadow colour of the command's content
   zIndex: 9999, // the z-index of the ui div
-  atMouse: false // draw menu at mouse position
+  atMouse: false, // draw menu at mouse position
+  outsideMenuCancel: false // if set to a number, this will cancel the command if the pointer is released outside of the spotlight, padded by the number given
 };
 
 module.exports = defaults;
