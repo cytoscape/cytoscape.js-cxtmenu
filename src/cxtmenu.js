@@ -451,6 +451,7 @@ let cxtmenu = function(params){
           queueDrawBg(r, rs);
 
           activeCommandI = undefined;
+          cy.emit("cxthoverend");
 
           inGesture = true;
           gestureStartEvent = e;
@@ -469,6 +470,7 @@ let cxtmenu = function(params){
         let pageY = (isTouch ? origE.touches[0].pageY : origE.pageY) - window.pageYOffset;
 
         activeCommandI = undefined;
+        cy.emit("cxthoverend");
 
         let dx = pageX - offset.left - ctrx;
         let dy = pageY - offset.top - ctry;
@@ -528,6 +530,7 @@ let cxtmenu = function(params){
 
           if( inThisCommand ){
             activeCommandI = i;
+            cy.emit("cxthover", commands[i]);
             break;
           }
 
@@ -547,6 +550,7 @@ let cxtmenu = function(params){
           if( select ){
             select.apply( target, [target, gestureStartEvent] );
             activeCommandI = undefined;
+            cy.emit("cxthoverend");
           }
         }
 
