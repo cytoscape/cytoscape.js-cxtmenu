@@ -327,6 +327,7 @@ let cxtmenu = function(params){
     let panEnabled;
     let boxEnabled;
     let gestureStartEvent;
+    let hoverOn;
 
     let restoreZoom = function(){
       if( zoomEnabled ){
@@ -539,6 +540,18 @@ let cxtmenu = function(params){
 
       .on('tapdrag', dragHandler)
 
+      .on('mousemove', function () {
+        if (activeCommandI !== undefined) {
+          let hovered = commands[activeCommandI].hover;
+          if (hovered) {
+            if (hoverOn !== activeCommandI) {
+              hovered.apply(target, [target, gestureStartEvent]);
+            }
+            hoverOn = activeCommandI;
+          }
+        }
+      })
+
       .on('cxttapend tapend', function(){
         parent.style.display = 'none';
         if( activeCommandI !== undefined ){
@@ -549,6 +562,8 @@ let cxtmenu = function(params){
             activeCommandI = undefined;
           }
         }
+
+        hoverOn = undefined;
 
         inGesture = false;
 
