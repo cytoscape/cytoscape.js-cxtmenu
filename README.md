@@ -86,6 +86,9 @@ let defaults = {
       select: function(ele){ // a function to execute when the command is selected
         console.log( ele.id() ) // `ele` holds the reference to the active element
       },
+      hover: function(ele){ // a function to execute when the command is hovered
+        console.log( ele.id() ) // `ele` holds the reference to the active element
+      },
       enabled: true // whether the command is selectable
     }
     */
