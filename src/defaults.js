@@ -7,6 +7,9 @@ let defaults = {
       fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
       content: 'a command name' // html/text content to be displayed in the menu
       contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+      hover: function(ele){ // a function to execute when the command is hovered
+        console.log( ele.id() ) // `ele` holds the reference to the active element
+      },
       select: function(ele){ // a function to execute when the command is selected
         console.log( ele.id() ) // `ele` holds the reference to the active element
       },
