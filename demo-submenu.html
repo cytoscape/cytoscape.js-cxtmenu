@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+		<title>cytoscape-cxtmenu.js submenu demo</title>
+
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+		<link href="https://unpkg.com/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+		<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+
+		<script src="cytoscape-cxtmenu.js"></script>
+
+		<style>
+			body {
+				font-family: helvetica;
+				font-size: 14px;
+				overflow: hidden;
+			}
+
+			#cy {
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				left: 0;
+				top: 0;
+				z-index: 999;
+			}
+
+			h1 {
+				opacity: 0.5;
+				font-size: 1em;
+			}
+
+			.cxtmenu-disabled {
+				opacity: 0.333;
+			}
+		</style>
+
+		<script>
+			window.addEventListener('DOMContentLoaded', function(){
+
+				var cy = window.cy = cytoscape({
+					container: document.getElementById('cy'),
+
+					style: [
+						{
+							selector: 'node',
+							css: {
+								'content': 'data(name)'
+							}
+						},
+
+						{
+							selector: 'edge',
+							css: {
+								'curve-style': 'bezier',
+								'target-arrow-shape': 'triangle'
+							}
+						}
+					],
+
+					elements: {
+						nodes: [
+							{ data: { id: 'j', name: 'Jerry' } },
+							{ data: { id: 'e', name: 'Elaine' } },
+							{ data: { id: 'k', name: 'Kramer' } },
+							{ data: { id: 'g', name: 'George' } }
+						],
+						edges: [
+							{ data: { source: 'j', target: 'e' } },
+							{ data: { source: 'j', target: 'k' } },
+							{ data: { source: 'j', target: 'g' } },
+							{ data: { source: 'e', target: 'j' } },
+							{ data: { source: 'e', target: 'k' } },
+							{ data: { source: 'k', target: 'j' } },
+							{ data: { source: 'k', target: 'e' } },
+							{ data: { source: 'k', target: 'g' } },
+							{ data: { source: 'g', target: 'j' } }
+						]
+					}
+				});
+
+				cy.cxtmenu({
+					selector: 'node',
+
+					submenuDefaults: {
+						pinning: true, // rest the pointer (stillDelay), then the freeze countdown runs (pinDelay) — lock indicator on the center node; disengage and the menu stays; re-engage anywhere on the menu to unfreeze after the countdown (moving while engaged releases immediately)
+						pinDelay: 500,
+						stillDelay: 300,
+						ringWidth: 70, // narrower submenu rings than the root menu
+						segmentThreshold: 6 // submenus with < 6 commands render as segments next to their owner command (default)
+					},
+
+					commands: [
+						{
+							content: 'Edit',
+							select: function(ele){
+								console.log( 'edit', ele.id() );
+							},
+							subcommands: [
+								{
+									content: 'Rename',
+									select: function(ele){
+										console.log( 'rename', ele.id() );
+									}
+								},
+								{
+									content: 'Recolor',
+									select: function(ele){
+										console.log( 'recolor', ele.id() );
+									},
+									// nested submenu (third ring)
+									subcommands: [
+										{
+											content: 'Red',
+											select: function(ele){
+												console.log( 'red', ele.id() );
+											}
+										},
+										{
+											content: 'Blue',
+											select: function(ele){
+												console.log( 'blue', ele.id() );
+											}
+										}
+									]
+								}
+							]
+						},
+
+						{
+							content: 'Connect',
+							select: function(ele){
+								console.log( 'connect', ele.id() );
+							},
+							subcommands: [
+								{
+									content: 'To selected',
+									select: function(ele){
+										console.log( 'connect to selected', ele.id() );
+									}
+								},
+								{
+									content: 'To all',
+									select: function(ele){
+										console.log( 'connect to all', ele.id() );
+									}
+								}
+							]
+						},
+
+						{
+							content: 'Remove',
+							select: function(ele){
+								console.log( 'remove', ele.id() );
+							},
+							// 6 subcommands: at the segment threshold, so this renders as a full ring
+							subcommands: [
+								{
+									content: 'Node',
+									select: function(ele){
+										console.log( 'remove node', ele.id() );
+									}
+								},
+								{
+									content: 'Edges',
+									select: function(ele){
+										console.log( 'remove edges', ele.id() );
+									}
+								},
+								{
+									content: 'Incomers',
+									select: function(ele){
+										console.log( 'remove incomers', ele.id() );
+									}
+								},
+								{
+									content: 'Outgoers',
+									select: function(ele){
+										console.log( 'remove outgoers', ele.id() );
+									}
+								},
+								{
+									content: 'Neighbors',
+									select: function(ele){
+										console.log( 'remove neighbors', ele.id() );
+									}
+								},
+								{
+									content: 'All',
+									select: function(ele){
+										console.log( 'remove all', ele.id() );
+									}
+								}
+							]
+						}
+					]
+				});
+
+			});
+		</script>
+	</head>
+
+	<body>
+		<h1>cytoscape-cxtmenu submenu demo &mdash; hold right-click / tap-hold a node, then swipe outward onto a submenu ring</h1>
+
+		<div id="cy"></div>
+
+	</body>
+
+</html>

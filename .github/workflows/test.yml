@@ -1,0 +1,65 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }} / Cytoscape ${{ matrix.cytoscape }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node:
+          - '24'
+          - '26'
+        cytoscape:
+          - '3.2.0'
+          - '3.34.0'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Select Cytoscape compatibility version
+        run: >
+          npm install
+          --no-save
+          --package-lock=false
+          --ignore-scripts
+          cytoscape@${{ matrix.cytoscape }}
+
+      - name: Verify Cytoscape version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          actual="$(node -p "require('cytoscape/package.json').version")"
+
+          test "$actual" = "${{ matrix.cytoscape }}"
+
+      - name: Test
+        run: npm test
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build

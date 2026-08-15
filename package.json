@@ -1,23 +1,26 @@
 {
   "name": "cytoscape-cxtmenu",
-  "version": "3.5.0",
+  "version": "3.6.0",
   "description": "A circular, swipeable context menu extension for Cytoscape.js",
   "main": "cytoscape-cxtmenu.js",
+  "module": "src/index.js",
   "author": {
     "name": "Max Franz",
     "email": "maxkfranz@gmail.com"
   },
   "scripts": {
-    "postpublish": "run-s gh-pages",
-    "gh-pages": "gh-pages -d pages",
-    "copyright": "update license",
-    "lint": "eslint src",
+    "test": "node --test test/*.test.js",
+    "test:min": "npm run test:cytoscape -- 3.2.0",
+    "test:latest": "npm run test:cytoscape -- 3.34.0",
+    "test:cytoscape": "node scripts/test-cytoscape.js",
+    "lint": "eslint .",
     "build": "cross-env NODE_ENV=production webpack",
     "build:min": "cross-env NODE_ENV=production MIN=true webpack",
-    "build:release": "run-s build copyright",
-    "watch": "webpack --progress --watch",
-    "dev": "webpack-dev-server --open",
-    "test": "mocha"
+    "build:release": "npm-run-all2 build copyright",
+    "copyright": "node scripts/update-license.js",
+    "watch": "webpack --watch",
+    "dev": "webpack serve --open",
+    "clean": "rimraf coverage"
   },
   "repository": {
     "type": "git",
@@ -32,26 +35,28 @@
     "url": "https://github.com/cytoscape/cytoscape.js-cxtmenu/issues"
   },
   "homepage": "https://github.com/cytoscape/cytoscape.js-cxtmenu",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "devDependencies": {
-    "babel-core": "^6.24.1",
-    "babel-loader": "^7.0.0",
-    "babel-preset-env": "^1.5.1",
-    "camelcase": "^4.1.0",
-    "chai": "4.0.2",
-    "cpy-cli": "^1.0.1",
-    "cross-env": "^5.0.0",
-    "eslint": "^3.9.1",
-    "gh-pages": "^1.0.0",
-    "mocha": "3.4.2",
-    "npm-run-all": "^4.1.2",
-    "rimraf": "^2.6.2",
-    "update": "^0.7.4",
-    "updater-license": "^1.0.0",
-    "webpack": "^2.6.1",
-    "webpack-dev-server": "^2.4.5"
+    "@babel/core": "^8.0.1",
+    "@babel/preset-env": "^8.0.2",
+    "babel-loader": "^10.1.1",
+    "chai": "^6.2.2",
+    "cpy-cli": "^7.0.0",
+    "cross-env": "^10.1.0",
+    "cytoscape": "3.34.0",
+    "eslint": "^10.8.0",
+    "gh-pages": "^6.3.0",
+    "globals": "^17.11.0",
+    "mocha": "^11.7.6",
+    "npm-run-all2": "^9.0.3",
+    "rimraf": "^6.1.3",
+    "webpack": "^5.109.2",
+    "webpack-cli": "^7.2.1",
+    "webpack-dev-server": "^6.0.0"
   },
   "peerDependencies": {
     "cytoscape": "^3.2.0"
-  },
-  "dependencies": {}
+  }
 }
