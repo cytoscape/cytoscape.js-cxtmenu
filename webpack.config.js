@@ -1,36 +1,60 @@
-const path = require('path');
-const pkg = require('./package.json');
-const camelcase = require('camelcase');
-const process = require('process');
-const webpack = require('webpack');
-const env = process.env;
-const NODE_ENV = env.NODE_ENV;
-const MIN = env.MIN;
-const PROD = NODE_ENV === 'production';
+'use strict';
 
-let config = {
-  devtool: PROD ? false : 'inline-source-map',
-  entry: './src/index.js',
-  output: {
-    path: path.join( __dirname ),
-    filename: pkg.name + '.js',
-    library: camelcase( pkg.name ),
-    libraryTarget: 'umd'
-  },
+const path = require('node:path');
+
+const pkg = require('./package.json');
+
+const isProduction =
+  process.env.NODE_ENV === 'production';
+
+const isMinified =
+  process.env.MIN === 'true';
+
+module.exports = {
+  mode: isProduction
+    ? 'production'
+    : 'development',
+
+  entry: path.resolve(
+    __dirname,
+    'src',
+    'index.js'
+  ),
+
+  devtool: isProduction
+    ? 'source-map'
+    : 'eval-source-map',
+
   module: {
     rules: [
-      { test: /\.js$/, exclude: /node_modules/, use: 'babel-loader' }
+      {
+        test: /\.m?js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader'
+        }
+      }
     ]
   },
-  externals: PROD ? Object.keys( pkg.dependencies || {} ) : [],
-  plugins: MIN ? [
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false,
-        drop_console: false,
-      }
-    })
-  ] : []
-};
 
-module.exports = config;
+  output: {
+    path: __dirname,
+    filename: isMinified
+      ? `${pkg.name}.min.js`
+      : `${pkg.name}.js`,
+    library: {
+      name: 'cytoscapeCxtmenu',
+      type: 'umd',
+      export: 'default'
+    },
+    globalObject: 'this'
+  },
+
+  devServer: {
+    static: {
+      directory: __dirname
+    },
+    hot: true,
+    open: true
+  }
+};

@@ -1,0 +1,22 @@
+services:
+  dev:
+    image: node:24-bookworm
+    working_dir: /repo
+    volumes:
+      - .:/repo
+      - npm-cache:/root/.npm
+    environment:
+      npm_config_cache: /root/.npm
+      NODE_OPTIONS: --enable-source-maps
+    command:
+      - bash
+      - -lc
+      - |
+        set -euo pipefail
+        git config --global --add safe.directory /repo
+        exec bash
+    stdin_open: true
+    tty: true
+
+volumes:
+  npm-cache:
